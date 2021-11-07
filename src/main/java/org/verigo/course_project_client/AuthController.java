@@ -13,7 +13,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.verigo.course_project_client.models.Response;
+import org.verigo.course_project_client.constraints.ROLE;
+import org.verigo.course_project_client.models.AuthResponse;
 
 import java.io.IOException;
 
@@ -59,28 +60,29 @@ public class AuthController {
 
         this.login = loginField.getText();
         this.password = passwordField.getText();
-        String resultMsg = handleLogin();
+        AuthResponse response = handleLogin();
 
-        if(!resultMsg.equals("Success")) {
+        if(!response.getMessage().equals("Success")) {
             loginField.setStyle("-fx-border-color: red");
             passwordField.setStyle("-fx-border-color: red");
             passwordMsg.setText(wrongCredentials);
             return;
         }
 
-        openWindow();
+        if(response.getRole() == ROLE.ADMIN)
+            openWindow();
     }
 
-    private String handleLogin() {
+    private AuthResponse handleLogin() {
         try {
             HttpResponse<JsonNode> apiResponse = Unirest.post("http://localhost:8080/auth/")
                     .header("Content-Type", "application/json")
                     .body("{\"login\": \"" + this.login + "\", \"password\": \"" + this.password + "\"}")
                     .asJson();
 
-            Response res = new Gson().fromJson(apiResponse.getBody().toString(), Response.class);
+            AuthResponse res = new Gson().fromJson(apiResponse.getBody().toString(), AuthResponse.class);
 
-            return res.getMessage();
+            return res;
         } catch (UnirestException e) {
             e.printStackTrace();
         }
@@ -90,10 +92,10 @@ public class AuthController {
     private void openWindow() {
         Stage stage = (Stage) this.loginField.getScene().getWindow();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("second-view.fxml"));
-        stage.setTitle("Welcome");
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("admin-view.fxml"));
+        stage.setTitle("Admin");
         try {
-            stage.setScene(new Scene(fxmlLoader.load(), 700, 450));
+            stage.setScene(new Scene(fxmlLoader.load(), 920, 600));
         } catch (IOException e) {
             e.printStackTrace();
         }
