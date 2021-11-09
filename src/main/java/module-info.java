@@ -20,4 +20,6 @@ module org.verigo.course_project_client {
     opens org.verigo.course_project_client.models to gson, javafx.base;
 
     exports org.verigo.course_project_client;
+    exports org.verigo.course_project_client.controllers;
+    opens org.verigo.course_project_client.controllers to javafx.fxml;
 }

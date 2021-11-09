@@ -1,4 +1,4 @@
-package org.verigo.course_project_client;
+package org.verigo.course_project_client.controllers;
 
 import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.verigo.course_project_client.MainApplication;
 import org.verigo.course_project_client.constraints.ROLE;
 import org.verigo.course_project_client.models.AuthResponse;
 

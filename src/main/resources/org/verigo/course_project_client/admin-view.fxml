@@ -2,24 +2,61 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="920.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.verigo.course_project_client.AdminViewController">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="920.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.verigo.course_project_client.controllers.AdminViewController">
   <tabs>
     <Tab text="Пользователи">
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <Pagination layoutY="-3.0" prefHeight="558.0" prefWidth="920.0" />
-                  <TableView fx:id="usersTable" layoutX="10.0" layoutY="14.0" prefHeight="490.0" prefWidth="900.0">
+                  <TableView fx:id="usersTable" layoutX="10.0" layoutY="14.0" prefHeight="470.0" prefWidth="900.0">
                     <columns>
                         <TableColumn fx:id="loginColumn" prefWidth="149" text="Логин" />
                         <TableColumn fx:id="surnameColumn" prefWidth="149" text="Фамилия" />
                         <TableColumn fx:id="nameColumn" prefWidth="149" text="Имя" />
-<!--                        <TableColumn fx:id="roleColumn" prefWidth="149" text="Роль" />-->
+      <!--                        <TableColumn fx:id="roleColumn" prefWidth="149" text="Роль" />-->
                         <TableColumn fx:id="createdColumn" prefWidth="149" text="Создан" />
                         <TableColumn fx:id="updatedColumn" prefWidth="150" text="Изменён" />
                     </columns>
                   </TableView>
+                  <GridPane hgap="10.0" layoutX="14.0" layoutY="497.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="144.4" minWidth="10.0" prefWidth="130" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="174.40000000000003" minWidth="10.0" prefWidth="130" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="130.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="130.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="130.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <TextField fx:id="addLoginField" promptText="Логин">
+                           <font>
+                              <Font size="14.0" />
+                           </font></TextField>
+                        <TextField fx:id="addSurnameField" promptText="Фамилия" GridPane.columnIndex="1">
+                           <font>
+                              <Font size="14.0" />
+                           </font></TextField>
+                        <TextField fx:id="addNameField" promptText="Имя" GridPane.columnIndex="2">
+                           <font>
+                              <Font size="14.0" />
+                           </font></TextField>
+                        <Button fx:id="addUserButton" mnemonicParsing="false" onAction="#onAddUserButtonClick" prefHeight="26.0" prefWidth="111.0" style="-fx-background-color: #46aae8;" text="Добавить" textAlignment="CENTER" textFill="WHITE" GridPane.columnIndex="5">
+                           <font>
+                              <Font size="14.0" />
+                           </font></Button>
+                        <ChoiceBox fx:id="addRoleBox" prefHeight="46.0" prefWidth="150.0" GridPane.columnIndex="4" />
+                        <PasswordField fx:id="addPasswordField" promptText="Пароль" GridPane.columnIndex="3">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </PasswordField>
+                     </children>
+                  </GridPane>
                </children></AnchorPane>
       </content>
     </Tab>

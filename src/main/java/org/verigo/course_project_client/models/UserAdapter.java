@@ -4,8 +4,8 @@ import org.verigo.course_project_client.constraints.ROLE;
 
 import java.util.Date;
 
-public class UsersAdapter {
-    private final int id;
+public class UserAdapter {
+//    private final int id;
     private final String login;
     private final String surname;
     private final String name;
@@ -13,13 +13,13 @@ public class UsersAdapter {
     private final Date updatedAt;
     private final ROLE roleName;
 
-    public UsersAdapter(UsersResponse usersResponse, ROLE roleName) {
-        this.id = usersResponse.getId();
-        this.login = usersResponse.getLogin();
-        this.name = usersResponse.getName();
-        this.surname = usersResponse.getSurname();
-        this.createdAt = usersResponse.getCreatedAt();
-        this.updatedAt = usersResponse.getUpdatedAt();
+    public UserAdapter(User user, ROLE roleName) {
+//        this.id = user.getId();
+        this.login = user.getLogin();
+        this.name = user.getName();
+        this.surname = user.getSurname();
+        this.createdAt = user.getCreatedAt();
+        this.updatedAt = user.getUpdatedAt();
         this.roleName = roleName;
     }
 
@@ -35,9 +35,9 @@ public class UsersAdapter {
         return surname;
     }
 
-    public int getId() {
-        return id;
-    }
+//    public int getId() {
+//        return id;
+//    }
 
     public String getLogin() {
         return login;
