@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.verigo.course_project_client.constraints.ROLE;
+import org.verigo.course_project_client.models.AuthResponse;
 import org.verigo.course_project_client.models.Role;
 import org.verigo.course_project_client.models.UserAdapter;
 import org.verigo.course_project_client.models.User;
@@ -23,6 +24,16 @@ import java.util.Date;
 import java.util.List;
 
 public class AdminViewController {
+    private static final String pattern = "^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+){8,}$";
+    private static final String namePattern = "^([а-яА-Я]){2,}$";
+    private static final String minRequirement = "Минимум 8 символов, 1 буква и 1 цифра";
+    private static final String nameRequirement = "Минимум 2 кириллических буквы";
+    private static final String wrongCredentials = "Пользователь с таким логином уже существует.";
+    private static final String pleaseSelectRole = "Пожалуйста, выберите роль";
+
+    private List<UserAdapter> adaptedUsers = new ArrayList<>();
+
+
     //Table and columns
     @FXML
     private TableView usersTable;
@@ -64,20 +75,105 @@ public class AdminViewController {
     private ROLE role;
 
     @FXML
-    private Button addUserButton;
+    private Label loginMsg;
+    @FXML
+    private Label passwordMsg;
+    @FXML
+    private Label surnameMsg;
+    @FXML
+    private Label nameMsg;
+    @FXML
+    private Label roleMsg;
+
+    @FXML
+    private void onRefreshTable(ActionEvent actionEvent) {
+        List<User> users = getAllUsers();
+
+        adaptedUsers.clear();
+        users.forEach(elem -> {
+            adaptedUsers.add(new UserAdapter(elem, elem.getRole().getId()));
+        });
+
+        fillTable();
+    }
+
 
     @FXML
     private void onAddUserButtonClick(ActionEvent actionEvent) {
+        resetWarnings();
+        if(beforeSendValidateInput() != 0) return;
+
         login = addLoginField.getText();
         surname = addSurnameField.getText();
         name = addNameField.getText();
         password = this.addPasswordField.getText();
 
-        User user = new User(login, surname, name, new Date(), new Date(), new Role(role), password);
+        User user = new User(null, login, surname, name, new Date(), new Date(), new Role(role), password);
 
-        addUser(user);
+        User createdUser = addUser(user);
+
+        if(afterSendValidateInput(createdUser) != 0) return;
+
+        adaptedUsers.add(new UserAdapter(createdUser, createdUser.getRole().getId()));
+        fillTable();
     }
 
+    private void resetWarnings() {
+        addLoginField.setStyle("");
+        addSurnameField.setStyle("");
+        addNameField.setStyle("");
+        addPasswordField.setStyle("");
+        addRoleBox.setStyle("");
+
+        loginMsg.setText("");
+        surnameMsg.setText("");
+        nameMsg.setText("");
+        passwordMsg.setText("");
+        roleMsg.setText("");
+    }
+
+    private int beforeSendValidateInput() {
+        if(!addLoginField.getText().matches(pattern)) {
+            addLoginField.setStyle("-fx-border-color: red");
+            loginMsg.setText(minRequirement);
+            return 1;
+        }
+
+        if(!addSurnameField.getText().matches(namePattern)) {
+            addSurnameField.setStyle("-fx-border-color: red");
+            surnameMsg.setText(nameRequirement);
+            return 1;
+        }
+
+        if(!addNameField.getText().matches(namePattern)) {
+            addNameField.setStyle("-fx-border-color: red");
+            nameMsg.setText(nameRequirement);
+            return 1;
+        }
+
+        if(!addPasswordField.getText().matches(pattern)) {
+            addPasswordField.setStyle("-fx-border-color: red");
+            passwordMsg.setText(minRequirement);
+            return 1;
+        }
+
+        if(addRoleBox.getSelectionModel().isEmpty()) {
+            addRoleBox.setStyle("-fx-border-color: red");
+            roleMsg.setText(pleaseSelectRole);
+            return 1;
+        }
+
+        return 0;
+    }
+
+    private int afterSendValidateInput(User createdUser) {
+        if(createdUser == null) {
+            addLoginField.setStyle("-fx-border-color: red");
+            loginMsg.setText(wrongCredentials);
+            return 1;
+        }
+        return 0;
+    }
 
     @FXML
     private void initialize() {
@@ -93,19 +189,21 @@ public class AdminViewController {
         createdColumn.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
         updatedColumn.setCellValueFactory(new PropertyValueFactory<>("updatedAt"));
 
-
-        List<User> users = getAllUsers();
-        List<UserAdapter> adaptedUsers = new ArrayList<>();
-
-        users.forEach(elem -> {
-            adaptedUsers.add(new UserAdapter(elem, elem.getRole().getId()));
-        });
-
         TableColumn<UserAdapter, String> roleColumn = new TableColumn<>("Роль");
         roleColumn.setCellValueFactory((new PropertyValueFactory<>("roleName")));
 
         usersTable.getColumns().addAll(roleColumn);
 
+        List<User> users = getAllUsers();
+
+        users.forEach(elem -> {
+            adaptedUsers.add(new UserAdapter(elem, elem.getRole().getId()));
+        });
+
+        fillTable();
+    }
+
+    private void fillTable() {
         usersTable.setItems(FXCollections.observableArrayList(adaptedUsers));
     }
 
@@ -138,13 +236,15 @@ public class AdminViewController {
                             + "{\n" + "\"id\": \"" + user.getRole().getId() + "\"\n}" + "}")
                     .asJson();
 
+            if(apiResponse.getStatus() == 400) return null;
+
             User createdUser = new Gson().fromJson(apiResponse.getBody().toString(), User.class);
 
             return createdUser;
         } catch (UnirestException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     private ArrayList<User> getAllUsers() {

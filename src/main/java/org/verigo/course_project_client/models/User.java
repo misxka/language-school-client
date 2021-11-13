@@ -3,7 +3,7 @@ package org.verigo.course_project_client.models;
 import java.util.Date;
 
 public class User {
-//    private final int id;
+    private final Integer id;
     private final String login;
     private final String surname;
     private final String name;
@@ -12,8 +12,8 @@ public class User {
     private final Role role;
     private final String password;
 
-    public User(String login, String surname, String name, Date createdAt, Date updatedAt, Role role) {
-//        this.id = id;
+    public User(Integer id, String login, String surname, String name, Date createdAt, Date updatedAt, Role role) {
+        this.id = id;
         this.login = login;
         this.name = name;
         this.surname = surname;
@@ -23,8 +23,8 @@ public class User {
         this.password = "";
     }
 
-    public User(String login, String surname, String name, Date createdAt, Date updatedAt, Role role, String password) {
-//        this.id = id;
+    public User(Integer id, String login, String surname, String name, Date createdAt, Date updatedAt, Role role, String password) {
+        this.id = id;
         this.login = login;
         this.name = name;
         this.surname = surname;
@@ -46,9 +46,9 @@ public class User {
         return surname;
     }
 
-//    public int getId() {
-//        return id;
-//    }
+    public Integer getId() {
+        return id;
+    }
 
     public String getLogin() {
         return login;
