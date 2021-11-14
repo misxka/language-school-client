@@ -8,6 +8,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
@@ -213,9 +214,68 @@ public class AdminViewController {
         usersTable.setEditable(true);
 
         loginColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        loginColumn.setOnEditCommit(
+                (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
+                    int index = cellEditEvent.getTablePosition().getRow();
+                    adaptedUsers.get(index).setLogin(cellEditEvent.getNewValue());
+                    adaptedUsers.get(index).setUpdatedAt(new Date());
+
+                    User user = new User(adaptedUsers.get(index));
+                    updateData(user);
+                }
+        );
+
         surnameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        surnameColumn.setOnEditCommit(
+                (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
+                    int index = cellEditEvent.getTablePosition().getRow();
+                    adaptedUsers.get(index).setSurname(cellEditEvent.getNewValue());
+                    adaptedUsers.get(index).setUpdatedAt(new Date());
+
+                    User user = new User(adaptedUsers.get(index));
+                    updateData(user);
+                }
+        );
+
         nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        nameColumn.setOnEditCommit(
+                (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
+                    int index = cellEditEvent.getTablePosition().getRow();
+                    adaptedUsers.get(index).setName(cellEditEvent.getNewValue());
+                    adaptedUsers.get(index).setUpdatedAt(new Date());
+
+                    User user = new User(adaptedUsers.get(index));
+                    updateData(user);
+                }
+        );
+
         roleColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn(roles[0], roles[1], roles[2]));
+    }
+
+    private User updateData(User user) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
+            HttpResponse<JsonNode> apiResponse = Unirest.put("http://localhost:8080/users/" + user.getId())
+                    .header("Content-Type", "application/json")
+                    .body("{\"login\": \"" + user.getLogin() + "\", \"password\": \""
+                            + user.getPassword() + "\", \"surname\": \""
+                            + user.getSurname() + "\", \"name\": \""
+                            + user.getName() + "\", \"createdAt\": \""
+                            + format.format(user.getCreatedAt()) + "\", \"updatedAt\": \""
+                            + format.format(user.getUpdatedAt()) + "\", \"role\": "
+                            + "{\n" + "\"id\": \"" + user.getRole().getId() + "\"\n}" + "}")
+                    .asJson();
+
+            if(apiResponse.getStatus() == 400) return null;
+
+            User createdUser = new Gson().fromJson(apiResponse.getBody().toString(), User.class);
+
+            return createdUser;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private void fillTable() {

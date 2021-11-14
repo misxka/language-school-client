@@ -34,6 +34,17 @@ public class User {
         this.password = password;
     }
 
+    public User(UserAdapter userAdapter) {
+        this.id = userAdapter.getId();
+        this.login = userAdapter.getLogin();
+        this.surname = userAdapter.getSurname();
+        this.name = userAdapter.getName();
+        this.createdAt = userAdapter.getCreatedAt();
+        this.updatedAt = userAdapter.getUpdatedAt();
+        this.password = userAdapter.getPassword();
+        this.role = new Role(userAdapter.getRoleName());
+    }
+
     public Role getRole() {
         return role;
     }

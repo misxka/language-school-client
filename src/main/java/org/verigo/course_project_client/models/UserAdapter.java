@@ -4,16 +4,18 @@ import org.verigo.course_project_client.constraints.ROLE;
 
 import java.util.Date;
 
+//TODO Try to refactor UserAdapter to User so there's no need in UserAdapter
 
 public class UserAdapter {
     private final int id;
-    private final String login;
-    private final String surname;
-    private final String name;
+    private String login;
+    private String surname;
+    private String name;
     private final Date createdAt;
-    private final Date updatedAt;
-    private final ROLE roleName;
-    private final String roleNameAdapted;
+    private Date updatedAt;
+    private final String password;
+    private ROLE roleName;
+    private String roleNameAdapted;
 
     private static String[] roles = { "Администратор", "Учитель", "Студент" };
 
@@ -24,6 +26,7 @@ public class UserAdapter {
         this.surname = user.getSurname();
         this.createdAt = user.getCreatedAt();
         this.updatedAt = user.getUpdatedAt();
+        this.password = user.getPassword();
         this.roleName = roleName;
         this.roleNameAdapted = roles[roleName.ordinal()];
     }
@@ -58,5 +61,33 @@ public class UserAdapter {
 
     public Date getCreatedAt() {
         return createdAt;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRoleName(ROLE roleName) {
+        this.roleName = roleName;
+    }
+
+    public void setRoleNameAdapted(String roleNameAdapted) {
+        this.roleNameAdapted = roleNameAdapted;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
