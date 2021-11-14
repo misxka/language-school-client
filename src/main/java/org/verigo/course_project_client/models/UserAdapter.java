@@ -4,6 +4,7 @@ import org.verigo.course_project_client.constraints.ROLE;
 
 import java.util.Date;
 
+
 public class UserAdapter {
     private final int id;
     private final String login;
@@ -12,6 +13,9 @@ public class UserAdapter {
     private final Date createdAt;
     private final Date updatedAt;
     private final ROLE roleName;
+    private final String roleNameAdapted;
+
+    private static String[] roles = { "Администратор", "Учитель", "Студент" };
 
     public UserAdapter(User user, ROLE roleName) {
         this.id = user.getId();
@@ -21,6 +25,11 @@ public class UserAdapter {
         this.createdAt = user.getCreatedAt();
         this.updatedAt = user.getUpdatedAt();
         this.roleName = roleName;
+        this.roleNameAdapted = roles[roleName.ordinal()];
+    }
+
+    public String getRoleNameAdapted() {
+        return roleNameAdapted;
     }
 
     public ROLE getRoleName() {

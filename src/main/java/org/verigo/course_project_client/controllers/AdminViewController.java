@@ -10,9 +10,10 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import org.verigo.course_project_client.constraints.ROLE;
-import org.verigo.course_project_client.models.AuthResponse;
 import org.verigo.course_project_client.models.Role;
 import org.verigo.course_project_client.models.UserAdapter;
 import org.verigo.course_project_client.models.User;
@@ -30,6 +31,8 @@ public class AdminViewController {
     private static final String nameRequirement = "Минимум 2 кириллических буквы";
     private static final String wrongCredentials = "Пользователь с таким логином уже существует.";
     private static final String pleaseSelectRole = "Пожалуйста, выберите роль";
+
+    private String[] roles = { "Студент", "Учитель", "Администратор" };
 
     private List<UserAdapter> adaptedUsers = new ArrayList<>();
 
@@ -52,6 +55,8 @@ public class AdminViewController {
 
     @FXML
     private TableColumn updatedColumn;
+
+    TableColumn<UserAdapter, String> roleColumn = new TableColumn<>("Роль");
 
     //Adding a user fields
     @FXML
@@ -189,8 +194,7 @@ public class AdminViewController {
         createdColumn.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
         updatedColumn.setCellValueFactory(new PropertyValueFactory<>("updatedAt"));
 
-        TableColumn<UserAdapter, String> roleColumn = new TableColumn<>("Роль");
-        roleColumn.setCellValueFactory((new PropertyValueFactory<>("roleName")));
+        roleColumn.setCellValueFactory((new PropertyValueFactory<>("roleNameAdapted")));
 
         usersTable.getColumns().addAll(roleColumn);
 
@@ -200,7 +204,18 @@ public class AdminViewController {
             adaptedUsers.add(new UserAdapter(elem, elem.getRole().getId()));
         });
 
+        setTableEditing();
+
         fillTable();
+    }
+
+    private void setTableEditing() {
+        usersTable.setEditable(true);
+
+        loginColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        surnameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        roleColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn(roles[0], roles[1], roles[2]));
     }
 
     private void fillTable() {
@@ -208,8 +223,6 @@ public class AdminViewController {
     }
 
     private void initAddUserComponent() {
-        String[] roles = { "Студент", "Учитель", "Администратор" };
-
         addRoleBox.getSelectionModel().selectedIndexProperty().addListener(
             (observableValue, number, t1) -> {
                 if (number.equals(0)) role = ROLE.ADMIN;
