@@ -4,18 +4,18 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="920.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.verigo.course_project_client.controllers.AdminViewController">
   <tabs>
     <Tab text="Пользователи">
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <TableView fx:id="usersTable" layoutX="10.0" layoutY="38.0" prefHeight="434.0" prefWidth="900.0">
+                  <TableView fx:id="usersTable" layoutX="10.0" layoutY="38.0" prefHeight="434.0" prefWidth="900.0" >
                     <columns>
                         <TableColumn fx:id="loginColumn" prefWidth="149" text="Логин" />
                         <TableColumn fx:id="surnameColumn" prefWidth="149" text="Фамилия" />
                         <TableColumn fx:id="nameColumn" prefWidth="149" text="Имя" />
-      <!--                        <TableColumn fx:id="roleColumn" prefWidth="149" text="Роль" />-->
                         <TableColumn fx:id="createdColumn" prefWidth="149" text="Создан" />
                         <TableColumn fx:id="updatedColumn" prefWidth="150" text="Изменён" />
                     </columns>
@@ -83,6 +83,14 @@
                      </children>
                   </GridPane>
                   <Button layoutX="778.0" layoutY="1.0" mnemonicParsing="false" onAction="#onRefreshTable" style="-fx-background-color: #46aae8;" text="Обновить таблицу" textFill="WHITE" />
+                  <Button fx:id="deleteUserButton" disable="true" graphicTextGap="10" layoutX="14.0" layoutY="533.0" mnemonicParsing="false" onAction="#handleDelete" text="Удалить пользователя" style="-fx-background-color: #ff4f4f">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <graphic>
+                        <FontIcon iconLiteral="fas-trash-alt" />
+                     </graphic>
+                  </Button>
                </children></AnchorPane>
       </content>
     </Tab>

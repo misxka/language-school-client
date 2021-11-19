@@ -92,6 +92,24 @@ public class AdminViewController {
     private Label roleMsg;
 
     @FXML
+    private Button deleteUserButton;
+
+
+    @FXML
+    private void initialize() {
+        initTableComponent();
+
+        initAddUserComponent();
+
+        usersTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null)
+                deleteUserButton.setDisable(false);
+            else
+                deleteUserButton.setDisable(true);
+        });
+    }
+
+    @FXML
     private void onRefreshTable(ActionEvent actionEvent) {
         List<User> users = getAllUsers();
 
@@ -103,6 +121,16 @@ public class AdminViewController {
         fillTable();
     }
 
+    @FXML
+    private void handleDelete(ActionEvent actionEvent) {
+        UserAdapter selectedUser = (UserAdapter) usersTable.getSelectionModel().getSelectedItem();
+        int id = selectedUser.getId();
+        adaptedUsers.remove(selectedUser);
+
+        deleteUser(id);
+
+        fillTable();
+    }
 
     @FXML
     private void onAddUserButtonClick(ActionEvent actionEvent) {
@@ -181,13 +209,6 @@ public class AdminViewController {
         return 0;
     }
 
-    @FXML
-    private void initialize() {
-        initTableComponent();
-
-        initAddUserComponent();
-    }
-
     private void initTableComponent() {
         loginColumn.setCellValueFactory(new PropertyValueFactory<>("login"));
         surnameColumn.setCellValueFactory(new PropertyValueFactory<>("surname"));
@@ -195,7 +216,7 @@ public class AdminViewController {
         createdColumn.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
         updatedColumn.setCellValueFactory(new PropertyValueFactory<>("updatedAt"));
 
-        roleColumn.setCellValueFactory((new PropertyValueFactory<>("roleNameAdapted")));
+        roleColumn.setCellValueFactory(new PropertyValueFactory<>("roleNameAdapted"));
 
         usersTable.getColumns().addAll(roleColumn);
 
@@ -223,7 +244,7 @@ public class AdminViewController {
                     adaptedUsers.get(index).setUpdatedAt(new Date());
 
                     User user = new User(adaptedUsers.get(index));
-                    updateData(user);
+                    updateUser(user);
                 }
         );
 
@@ -235,7 +256,7 @@ public class AdminViewController {
                     adaptedUsers.get(index).setUpdatedAt(new Date());
 
                     User user = new User(adaptedUsers.get(index));
-                    updateData(user);
+                    updateUser(user);
                 }
         );
 
@@ -247,7 +268,7 @@ public class AdminViewController {
                     adaptedUsers.get(index).setUpdatedAt(new Date());
 
                     User user = new User(adaptedUsers.get(index));
-                    updateData(user);
+                    updateUser(user);
                 }
         );
 
@@ -259,35 +280,9 @@ public class AdminViewController {
                     adaptedUsers.get(index).setUpdatedAt(new Date());
 
                     User user = new User(adaptedUsers.get(index));
-                    updateData(user);
+                    updateUser(user);
                 }
         );
-    }
-
-    private User updateData(User user) {
-        try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-
-            HttpResponse<JsonNode> apiResponse = Unirest.put("http://localhost:8080/users/" + user.getId())
-                    .header("Content-Type", "application/json")
-                    .body("{\"login\": \"" + user.getLogin() + "\", \"password\": \""
-                            + user.getPassword() + "\", \"surname\": \""
-                            + user.getSurname() + "\", \"name\": \""
-                            + user.getName() + "\", \"createdAt\": \""
-                            + format.format(user.getCreatedAt()) + "\", \"updatedAt\": \""
-                            + format.format(user.getUpdatedAt()) + "\", \"role\": "
-                            + "{\n" + "\"id\": \"" + user.getRole().getId() + "\"\n}" + "}")
-                    .asJson();
-
-            if(apiResponse.getStatus() == 400) return null;
-
-            User createdUser = new Gson().fromJson(apiResponse.getBody().toString(), User.class);
-
-            return createdUser;
-        } catch (UnirestException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     private void fillTable() {
@@ -306,6 +301,7 @@ public class AdminViewController {
         addRoleBox.setItems(FXCollections.observableArrayList(roles));
     }
 
+    //API Calls
     private User addUser(User user) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -346,5 +342,44 @@ public class AdminViewController {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private User updateUser(User user) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
+            HttpResponse<JsonNode> apiResponse = Unirest.put("http://localhost:8080/users/" + user.getId())
+                    .header("Content-Type", "application/json")
+                    .body("{\"login\": \"" + user.getLogin() + "\", \"password\": \""
+                            + user.getPassword() + "\", \"surname\": \""
+                            + user.getSurname() + "\", \"name\": \""
+                            + user.getName() + "\", \"createdAt\": \""
+                            + format.format(user.getCreatedAt()) + "\", \"updatedAt\": \""
+                            + format.format(user.getUpdatedAt()) + "\", \"role\": "
+                            + "{\n" + "\"id\": \"" + user.getRole().getId() + "\"\n}" + "}")
+                    .asJson();
+
+            if(apiResponse.getStatus() == 400) return null;
+
+            User createdUser = new Gson().fromJson(apiResponse.getBody().toString(), User.class);
+
+            return createdUser;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String deleteUser(int id) {
+        try {
+            HttpResponse<JsonNode> apiResponse = Unirest.delete("http://localhost:8080/users/" + id)
+                    .header("Content-Type", "application/json")
+                    .asJson();
+
+            return apiResponse.getBody().toString();
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
