@@ -2,7 +2,9 @@ package org.verigo.course_project_client.models;
 
 import org.verigo.course_project_client.constraints.ROLE;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 //TODO Try to refactor UserAdapter to User so there's no need in UserAdapter
 
@@ -17,7 +19,7 @@ public class UserAdapter {
     private ROLE roleName;
     private String roleNameAdapted;
 
-    private static String[] roles = { "Администратор", "Учитель", "Студент" };
+    private static List<String> roles = Arrays.asList( "Администратор", "Учитель", "Студент" );
 
     public UserAdapter(User user, ROLE roleName) {
         this.id = user.getId();
@@ -28,7 +30,7 @@ public class UserAdapter {
         this.updatedAt = user.getUpdatedAt();
         this.password = user.getPassword();
         this.roleName = roleName;
-        this.roleNameAdapted = roles[roleName.ordinal()];
+        this.roleNameAdapted = roles.get(roleName.ordinal());
     }
 
     public String getRoleNameAdapted() {
@@ -83,8 +85,16 @@ public class UserAdapter {
         this.roleName = roleName;
     }
 
+    public void setRoleName(String roleNameAdapted) {
+        int index = roles.indexOf(roleNameAdapted);
+        if(index == ROLE.ADMIN.ordinal()) this.roleName = ROLE.ADMIN;
+        if(index == ROLE.TEACHER.ordinal()) this.roleName = ROLE.TEACHER;
+        if(index == ROLE.STUDENT.ordinal()) this.roleName = ROLE.STUDENT;
+    }
+
     public void setRoleNameAdapted(String roleNameAdapted) {
         this.roleNameAdapted = roleNameAdapted;
+        this.setRoleName(roleNameAdapted);
     }
 
     public void setUpdatedAt(Date updatedAt) {

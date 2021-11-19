@@ -213,6 +213,8 @@ public class AdminViewController {
     private void setTableEditing() {
         usersTable.setEditable(true);
 
+        //TODO Check differences before sending update
+
         loginColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         loginColumn.setOnEditCommit(
                 (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
@@ -250,6 +252,16 @@ public class AdminViewController {
         );
 
         roleColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn(roles[0], roles[1], roles[2]));
+        roleColumn.setOnEditCommit(
+                (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
+                    int index = cellEditEvent.getTablePosition().getRow();
+                    adaptedUsers.get(index).setRoleNameAdapted(cellEditEvent.getNewValue());
+                    adaptedUsers.get(index).setUpdatedAt(new Date());
+
+                    User user = new User(adaptedUsers.get(index));
+                    updateData(user);
+                }
+        );
     }
 
     private User updateData(User user) {
