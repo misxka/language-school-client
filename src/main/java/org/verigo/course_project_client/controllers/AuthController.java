@@ -96,7 +96,9 @@ public class AuthController {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("admin-view.fxml"));
         stage.setTitle("Admin");
         try {
-            stage.setScene(new Scene(fxmlLoader.load(), 920, 600));
+            stage.setScene(new Scene(fxmlLoader.load(), 1200, 750));
+            stage.setX(200);
+            stage.setY(20);
         } catch (IOException e) {
             e.printStackTrace();
         }

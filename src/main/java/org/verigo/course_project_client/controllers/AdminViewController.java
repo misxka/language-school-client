@@ -7,13 +7,18 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Side;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import org.verigo.course_project_client.constraints.ROLE;
 import org.verigo.course_project_client.models.Role;
 import org.verigo.course_project_client.models.UserAdapter;
@@ -24,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AdminViewController {
     private static final String pattern = "^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+){8,}$";
@@ -95,6 +101,14 @@ public class AdminViewController {
     private Button deleteUserButton;
 
 
+    //Metrics
+    @FXML
+    private PieChart usersPieChart;
+
+    @FXML
+    private BarChart usersBarChart;
+
+
     @FXML
     private void initialize() {
         initTableComponent();
@@ -107,6 +121,10 @@ public class AdminViewController {
             else
                 deleteUserButton.setDisable(true);
         });
+
+        initPieChart();
+
+        initBarChart();
     }
 
     @FXML
@@ -217,6 +235,8 @@ public class AdminViewController {
         updatedColumn.setCellValueFactory(new PropertyValueFactory<>("updatedAt"));
 
         roleColumn.setCellValueFactory(new PropertyValueFactory<>("roleNameAdapted"));
+        roleColumn.setMaxWidth(180);
+        roleColumn.setPrefWidth(180);
 
         usersTable.getColumns().addAll(roleColumn);
 
@@ -381,5 +401,73 @@ public class AdminViewController {
             e.printStackTrace();
             return null;
         }
+    }
+
+
+    //Metrics
+    private void initPieChart() {
+
+        int adminsAmount = filterByRole(ROLE.ADMIN.ordinal());
+        int teachersAmount = filterByRole(ROLE.TEACHER.ordinal());
+        int studentsAmount = filterByRole(ROLE.STUDENT.ordinal());
+
+        ObservableList<PieChart.Data> pieChartData =
+                FXCollections.observableArrayList(
+                        new PieChart.Data(roles[2], adminsAmount),
+                        new PieChart.Data(roles[1], teachersAmount),
+                        new PieChart.Data(roles[0], studentsAmount));
+
+        this.usersPieChart.setData(pieChartData);
+        this.usersPieChart.setLegendSide(Side.BOTTOM);
+
+        usersPieChart.getData().forEach(data -> {
+            String percentage = (int) data.getPieValue() + " пользователей";
+            Tooltip toolTip = new Tooltip(percentage);
+            Tooltip.install(data.getNode(), toolTip);
+        });
+    }
+
+    private int filterByRole(int ordinal) {
+        return adaptedUsers.stream().filter(user -> user.getRoleName().ordinal() == ordinal).collect(Collectors.toList()).size();
+    }
+
+    private void initBarChart() {
+        final CategoryAxis xAxis = new CategoryAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        final BarChart<String,Number> bc =
+                new BarChart<String,Number>(xAxis,yAxis);
+        xAxis.setLabel("Роль");
+        yAxis.setLabel("Количество");
+
+        String requiredYear = new SimpleDateFormat("yyyy").format(new Date());
+        int requiredYearInt = Integer.parseInt(requiredYear);
+
+        XYChart.Series series1 = new XYChart.Series();
+        series1.setName(String.valueOf(requiredYearInt));
+        series1.getData().add(new XYChart.Data(roles[2], filterByYearAndRole(requiredYear, ROLE.ADMIN.ordinal())));
+        series1.getData().add(new XYChart.Data(roles[1], filterByYearAndRole(requiredYear, ROLE.TEACHER.ordinal())));
+        series1.getData().add(new XYChart.Data(roles[0], filterByYearAndRole(requiredYear, ROLE.STUDENT.ordinal())));
+
+        requiredYear = String.valueOf(--requiredYearInt);
+        XYChart.Series series2 = new XYChart.Series();
+        series2.setName(requiredYear);
+        series2.getData().add(new XYChart.Data(roles[2], filterByYearAndRole(requiredYear, ROLE.ADMIN.ordinal())));
+        series2.getData().add(new XYChart.Data(roles[1], filterByYearAndRole(requiredYear, ROLE.TEACHER.ordinal())));
+        series2.getData().add(new XYChart.Data(roles[0], filterByYearAndRole(requiredYear, ROLE.STUDENT.ordinal())));
+
+
+        requiredYear = String.valueOf(--requiredYearInt);
+        XYChart.Series series3 = new XYChart.Series();
+        series3.setName(requiredYear);
+        series3.getData().add(new XYChart.Data(roles[2], filterByYearAndRole(requiredYear, ROLE.ADMIN.ordinal())));
+        series3.getData().add(new XYChart.Data(roles[1], filterByYearAndRole(requiredYear, ROLE.TEACHER.ordinal())));
+        series3.getData().add(new XYChart.Data(roles[0], filterByYearAndRole(requiredYear, ROLE.STUDENT.ordinal())));
+
+        usersBarChart.getData().addAll(series1, series2, series3);
+    }
+
+    private int filterByYearAndRole(String year, int ordinal) {
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+        return adaptedUsers.stream().filter(user -> yearFormat.format(user.getCreatedAt()).equals(year) && user.getRoleName().ordinal() == ordinal).collect(Collectors.toList()).size();
     }
 }
