@@ -22,10 +22,8 @@ import org.verigo.course_project_client.models.Course;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class WorkspaceViewController {
     private final String[] levels = { "A1", "A1+", "A2", "A2+", "B1", "B1+", "B2", "B2+", "C1", "C1+", "C2", "C2+" };
@@ -62,8 +60,12 @@ public class WorkspaceViewController {
     @FXML
     private ChoiceBox levelFilter;
 
+    @FXML
+    private TextField titleFilter;
+
 
     private List<Course> courses = new ArrayList<>();
+    private List<Course> filteredCourses = new ArrayList<>();
 
 
 
@@ -71,6 +73,15 @@ public class WorkspaceViewController {
     public void initialize() {
         initTableComponent();
         initFilterBox();
+
+        addFilterListeners();
+    }
+
+    private void addFilterListeners() {
+        titleFilter.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredCourses = courses.stream().filter(p -> p.getTitle().toLowerCase(Locale.ROOT).contains(newValue.toLowerCase(Locale.ROOT))).collect(Collectors.toList());
+            coursesTable.setItems(FXCollections.observableArrayList(filteredCourses));
+        });
     }
 
     private void fillTable() {
@@ -92,12 +103,10 @@ public class WorkspaceViewController {
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
 
 
-        TableColumn moreInfoColumn = new TableColumn<>("moreInfo");
+        TableColumn moreInfoColumn = new TableColumn<>("Подробнее");
         moreInfoColumn.setMaxWidth(100);
         moreInfoColumn.setPrefWidth(100);
         moreInfoColumn.setSortable(false);
-        moreInfoColumn.setCellValueFactory((Callback<TableColumn.CellDataFeatures<Course, Boolean>, ObservableValue<Boolean>>) p ->
-            new SimpleBooleanProperty(p.getValue() != null));
         moreInfoColumn.setCellFactory((Callback<TableColumn<Course, Boolean>, TableCell<Course, Boolean>>) p ->
             new ButtonCell());
 
@@ -131,7 +140,6 @@ public class WorkspaceViewController {
         languageFilter.setItems(FXCollections.observableArrayList(languages));
         levelFilter.setItems(FXCollections.observableArrayList(levels));
 
-
         BigDecimal max = Collections.max(courses, Comparator.comparing(Course::getPrice)).getPrice();
         BigDecimal min = Collections.min(courses, Comparator.comparing(Course::getPrice)).getPrice();
 
@@ -141,6 +149,7 @@ public class WorkspaceViewController {
         lessThanSlider.setMax(max.doubleValue());
         lessThanSlider.setMin(min.doubleValue());
     }
+
 
 
     private class ButtonCell extends TableCell<Course, Boolean> {
@@ -166,6 +175,14 @@ public class WorkspaceViewController {
                     e.printStackTrace();
                 }
                 stage.show();
+            });
+
+            emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
+                if (isNowEmpty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(cellButton);
+                }
             });
         }
 
