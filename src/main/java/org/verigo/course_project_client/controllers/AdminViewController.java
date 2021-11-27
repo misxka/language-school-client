@@ -256,50 +256,50 @@ public class AdminViewController {
 
         loginColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         loginColumn.setOnEditCommit(
-                (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
-                    int index = cellEditEvent.getTablePosition().getRow();
-                    adaptedUsers.get(index).setLogin(cellEditEvent.getNewValue());
-                    adaptedUsers.get(index).setUpdatedAt(new Date());
+            (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
+                int index = cellEditEvent.getTablePosition().getRow();
+                adaptedUsers.get(index).setLogin(cellEditEvent.getNewValue());
+                adaptedUsers.get(index).setUpdatedAt(new Date());
 
-                    User user = new User(adaptedUsers.get(index));
-                    updateUser(user);
-                }
+                User user = new User(adaptedUsers.get(index));
+                updateUser(user);
+            }
         );
 
         surnameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         surnameColumn.setOnEditCommit(
-                (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
-                    int index = cellEditEvent.getTablePosition().getRow();
-                    adaptedUsers.get(index).setSurname(cellEditEvent.getNewValue());
-                    adaptedUsers.get(index).setUpdatedAt(new Date());
+            (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
+                int index = cellEditEvent.getTablePosition().getRow();
+                adaptedUsers.get(index).setSurname(cellEditEvent.getNewValue());
+                adaptedUsers.get(index).setUpdatedAt(new Date());
 
-                    User user = new User(adaptedUsers.get(index));
-                    updateUser(user);
-                }
+                User user = new User(adaptedUsers.get(index));
+                updateUser(user);
+            }
         );
 
         nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         nameColumn.setOnEditCommit(
-                (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
-                    int index = cellEditEvent.getTablePosition().getRow();
-                    adaptedUsers.get(index).setName(cellEditEvent.getNewValue());
-                    adaptedUsers.get(index).setUpdatedAt(new Date());
+            (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
+                int index = cellEditEvent.getTablePosition().getRow();
+                adaptedUsers.get(index).setName(cellEditEvent.getNewValue());
+                adaptedUsers.get(index).setUpdatedAt(new Date());
 
-                    User user = new User(adaptedUsers.get(index));
-                    updateUser(user);
-                }
+                User user = new User(adaptedUsers.get(index));
+                updateUser(user);
+            }
         );
 
         roleColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn(roles[0], roles[1], roles[2]));
         roleColumn.setOnEditCommit(
-                (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
-                    int index = cellEditEvent.getTablePosition().getRow();
-                    adaptedUsers.get(index).setRoleNameAdapted(cellEditEvent.getNewValue());
-                    adaptedUsers.get(index).setUpdatedAt(new Date());
+            (EventHandler<TableColumn.CellEditEvent<UserAdapter, String>>) cellEditEvent -> {
+                int index = cellEditEvent.getTablePosition().getRow();
+                adaptedUsers.get(index).setRoleNameAdapted(cellEditEvent.getNewValue());
+                adaptedUsers.get(index).setUpdatedAt(new Date());
 
-                    User user = new User(adaptedUsers.get(index));
-                    updateUser(user);
-                }
+                User user = new User(adaptedUsers.get(index));
+                updateUser(user);
+            }
         );
     }
 

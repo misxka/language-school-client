@@ -12,16 +12,20 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import javafx.util.Callback;
+import org.verigo.course_project_client.MainApplication;
 import org.verigo.course_project_client.models.Course;
-import org.verigo.course_project_client.models.User;
-import org.verigo.course_project_client.models.UserAdapter;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,8 +79,8 @@ public class WorkspaceViewController {
 
 
         TableColumn moreInfoColumn = new TableColumn<>("moreInfo");
-        moreInfoColumn.setMaxWidth(75);
-        moreInfoColumn.setPrefWidth(75);
+        moreInfoColumn.setMaxWidth(100);
+        moreInfoColumn.setPrefWidth(100);
         moreInfoColumn.setSortable(false);
         moreInfoColumn.setCellValueFactory((Callback<TableColumn.CellDataFeatures<Course, Boolean>, ObservableValue<Boolean>>) p ->
             new SimpleBooleanProperty(p.getValue() != null));
@@ -108,24 +112,43 @@ public class WorkspaceViewController {
         }
         return null;
     }
-}
 
-class ButtonCell extends TableCell<Course, Boolean> {
-    final Button cellButton = new Button("Action");
 
-    ButtonCell(){
 
-        cellButton.setOnAction(t -> {
-            //TODO
-            System.out.println("Clicked!");
-        });
-    }
+    private class ButtonCell extends TableCell<Course, Boolean> {
+        final Button cellButton = new Button("Подробнее");
 
-    @Override
-    protected void updateItem(Boolean t, boolean empty) {
-        super.updateItem(t, empty);
-        if(!empty){
-            setGraphic(cellButton);
+        ButtonCell(){
+            cellButton.setOnAction(t -> {
+                Course course = courses.get(getTableRow().getIndex());
+                int id = course.getId();
+
+                Stage stage = new Stage();
+                FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("teacher/course-info-view.fxml"));
+                CourseInfoViewController courseInfoViewController = new CourseInfoViewController();
+                courseInfoViewController.setCourse(course);
+                fxmlLoader.setController(courseInfoViewController);
+
+                stage.setTitle("Курс \"" + course.getTitle() + "\"");
+                try {
+                    stage.setScene(new Scene(fxmlLoader.load(), 1000, 650));
+                    stage.setX(300);
+                    stage.setY(70);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                stage.show();
+            });
+        }
+
+        @Override
+        protected void updateItem(Boolean t, boolean empty) {
+            super.updateItem(t, empty);
+            if(!empty){
+                setGraphic(cellButton);
+            }
         }
     }
 }
+
+
