@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import org.kordamp.ikonli.javafx.*?>
+
+<AnchorPane fx:id="coursesBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.verigo.course_project_client.controllers.teacher.TeacherViewController">
+   <children>
+      <GridPane alignment="CENTER" layoutX="200.0" layoutY="225.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="200.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="200.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="200.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" prefHeight="190.0" prefWidth="190.0" style="-fx-background-color: #46aae8; -fx-cursor: hand;" text="Мои курсы" textAlignment="CENTER" textFill="WHITE" wrapText="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                <graphic>
+                    <FontIcon iconColor="white" iconLiteral="fas-book" iconSize="50" />
+                </graphic>
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Button>
+            <Button fx:id="groupsBtn" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#onGroupsBtnClick" prefHeight="190.0" prefWidth="190.0" style="-fx-background-color: #46aae8; -fx-cursor: hand;" text="Группы" textAlignment="CENTER" textFill="WHITE" wrapText="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                 <graphic>
+                     <FontIcon iconColor="white" iconLiteral="fas-user-friends" iconSize="50" />
+                 </graphic>
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Button>
+            <Button fx:id="workspaceBtn" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#onWorkspaceBtnClick" prefHeight="190.0" prefWidth="190.0" style="-fx-background-color: #46aae8; -fx-cursor: hand;" text="Мастерская преподавателя" textAlignment="CENTER" textFill="WHITE" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                <graphic>
+                    <FontIcon iconColor="white" iconLiteral="fas-tools" iconSize="50" />
+                </graphic>
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Button>
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>

@@ -17,8 +17,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import org.verigo.course_project_client.constraints.ROLE;
 import org.verigo.course_project_client.models.Role;
 import org.verigo.course_project_client.models.UserAdapter;

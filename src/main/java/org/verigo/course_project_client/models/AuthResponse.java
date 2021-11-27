@@ -1,21 +1,19 @@
 package org.verigo.course_project_client.models;
 
-import org.verigo.course_project_client.constraints.ROLE;
-
 public class AuthResponse {
     private final String message;
-    private final ROLE role;
+    private final User user;
 
-    public AuthResponse(String message, ROLE role) {
+    public AuthResponse(String message, User user) {
         this.message = message;
-        this.role = role;
+        this.user = user;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public ROLE getRole() {
-        return role;
+    public User getUser() {
+        return user;
     }
 }

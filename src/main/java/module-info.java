@@ -22,4 +22,8 @@ module org.verigo.course_project_client {
     exports org.verigo.course_project_client;
     exports org.verigo.course_project_client.controllers;
     opens org.verigo.course_project_client.controllers to javafx.fxml;
+    exports org.verigo.course_project_client.controllers.teacher;
+    opens org.verigo.course_project_client.controllers.teacher to javafx.fxml;
+    exports org.verigo.course_project_client.controllers.student;
+    opens org.verigo.course_project_client.controllers.student to javafx.fxml;
 }

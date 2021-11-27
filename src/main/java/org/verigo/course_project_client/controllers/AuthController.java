@@ -16,6 +16,8 @@ import javafx.stage.Stage;
 import org.verigo.course_project_client.MainApplication;
 import org.verigo.course_project_client.constraints.ROLE;
 import org.verigo.course_project_client.models.AuthResponse;
+import org.verigo.course_project_client.models.User;
+import org.verigo.course_project_client.store.UserProvider;
 
 import java.io.IOException;
 
@@ -70,8 +72,15 @@ public class AuthController {
             return;
         }
 
-        if(response.getRole() == ROLE.ADMIN)
-            openWindow();
+        UserProvider holder = UserProvider.getInstance();
+        holder.setUser(response.getUser());
+
+        if(response.getUser().getRole().getId() == ROLE.ADMIN)
+            openAdminWindow();
+        if(response.getUser().getRole().getId() == ROLE.TEACHER)
+            openTeacherWindow();
+        if(response.getUser().getRole().getId() == ROLE.STUDENT)
+            openStudentWindow();
     }
 
     private AuthResponse handleLogin() {
@@ -90,15 +99,45 @@ public class AuthController {
         return null;
     }
 
-    private void openWindow() {
+    private void openAdminWindow() {
         Stage stage = (Stage) this.loginField.getScene().getWindow();
 
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("admin-view.fxml"));
-        stage.setTitle("Admin");
+        stage.setTitle("Администратор");
         try {
             stage.setScene(new Scene(fxmlLoader.load(), 1200, 750));
             stage.setX(200);
             stage.setY(20);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        stage.show();
+    }
+
+    private void openTeacherWindow() {
+        Stage stage = (Stage) this.loginField.getScene().getWindow();
+
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("teacher/teacher-view.fxml"));
+        stage.setTitle("Преподаватель");
+        try {
+            stage.setScene(new Scene(fxmlLoader.load(), 1000, 650));
+            stage.setX(300);
+            stage.setY(70);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        stage.show();
+    }
+
+    private void openStudentWindow() {
+        Stage stage = (Stage) this.loginField.getScene().getWindow();
+
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("student/student-view.fxml"));
+        stage.setTitle("Студент");
+        try {
+            stage.setScene(new Scene(fxmlLoader.load(), 1000, 650));
+            stage.setX(300);
+            stage.setY(70);
         } catch (IOException e) {
             e.printStackTrace();
         }
