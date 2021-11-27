@@ -11,13 +11,13 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="coursesTable" layoutX="14.0" layoutY="14.0" prefHeight="297.0" prefWidth="550.0">
+                        <TableView fx:id="coursesTable" layoutX="14.0" layoutY="14.0" prefHeight="298.0" prefWidth="633.0">
                           <columns>
-                            <TableColumn prefWidth="203.40000915527344" text="Название" />
-                            <TableColumn minWidth="8.20001220703125" prefWidth="124.79998779296875" text="Язык" />
-                            <TableColumn minWidth="0.0" prefWidth="65.60003662109375" text="Уровень" />
-                            <TableColumn prefWidth="67.0" text="Онлайн" />
-                            <TableColumn prefWidth="79.0" text="Цена" />
+                            <TableColumn fx:id="titleColumn" prefWidth="203.40000915527344" text="Название" />
+                            <TableColumn fx:id="languageColumn" minWidth="8.20001220703125" prefWidth="124.79998779296875" text="Язык" />
+                            <TableColumn fx:id="levelColumn" minWidth="0.0" prefWidth="65.60003662109375" text="Уровень" />
+                            <TableColumn fx:id="onlineColumn" prefWidth="67.0" text="Онлайн" />
+                            <TableColumn fx:id="priceColumn" prefWidth="79.0" text="Цена" />
                           </columns>
                         </TableView>
                      </children></AnchorPane>

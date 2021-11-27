@@ -33,7 +33,7 @@ public class Course {
         return price;
     }
 
-    public boolean isOnline() {
+    public boolean getIsOnline() {
         return isOnline;
     }
 
@@ -66,7 +66,7 @@ public class Course {
         this.price = price;
     }
 
-    public void setOnline(boolean online) {
+    public void setIsOnline(boolean online) {
         isOnline = online;
     }
 
