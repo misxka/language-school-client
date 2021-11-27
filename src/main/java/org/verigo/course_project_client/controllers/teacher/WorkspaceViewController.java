@@ -7,6 +7,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class WorkspaceViewController {
@@ -63,10 +65,23 @@ public class WorkspaceViewController {
     @FXML
     private TextField titleFilter;
 
+    @FXML
+    private CheckBox onlineFilter;
+
 
     private List<Course> courses = new ArrayList<>();
     private List<Course> filteredCourses = new ArrayList<>();
 
+
+    private String titleRequested = "";
+    private String languageRequested = "";
+    private String levelRequested = "";
+    private boolean onlineRequested = true;
+
+    private Predicate<Course> titlePredicate = course -> course.getTitle().toLowerCase(Locale.ROOT).contains(titleRequested.toLowerCase(Locale.ROOT));
+    private Predicate<Course> languagePredicate = course -> course.getLanguage().toLowerCase(Locale.ROOT).contains(languageRequested.toLowerCase(Locale.ROOT));
+    private Predicate<Course> levelPredicate = course -> course.getLevel().toLowerCase(Locale.ROOT).contains(levelRequested.toLowerCase(Locale.ROOT));
+    private Predicate<Course> onlinePredicate = course -> course.getIsOnline() == onlineRequested;
 
 
     @FXML
@@ -77,10 +92,30 @@ public class WorkspaceViewController {
         addFilterListeners();
     }
 
+    private void applyFilters() {
+        filteredCourses = courses.stream().filter(titlePredicate.and(languagePredicate).and(levelPredicate).and(onlinePredicate)).collect(Collectors.toList());
+        coursesTable.setItems(FXCollections.observableArrayList(filteredCourses));
+    }
+
     private void addFilterListeners() {
         titleFilter.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredCourses = courses.stream().filter(p -> p.getTitle().toLowerCase(Locale.ROOT).contains(newValue.toLowerCase(Locale.ROOT))).collect(Collectors.toList());
-            coursesTable.setItems(FXCollections.observableArrayList(filteredCourses));
+            titleRequested = newValue;
+            applyFilters();
+        });
+
+        languageFilter.getSelectionModel().selectedIndexProperty().addListener((observableValue, number1, number2) -> {
+            languageRequested = (String) languageFilter.getItems().get((Integer) number2);
+            applyFilters();
+        });
+
+        levelFilter.getSelectionModel().selectedIndexProperty().addListener((observableValue, number1, number2) -> {
+            levelRequested = (String) levelFilter.getItems().get((Integer) number2);
+            applyFilters();
+        });
+
+        onlineFilter.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+            onlineRequested = newValue;
+            applyFilters();
         });
     }
 
