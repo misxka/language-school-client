@@ -9,16 +9,10 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -27,10 +21,16 @@ import org.verigo.course_project_client.models.Course;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class WorkspaceViewController {
+    private final String[] levels = { "A1", "A1+", "A2", "A2+", "B1", "B1+", "B2", "B2+", "C1", "C1+", "C2", "C2+" };
+    private final String[] languages = { "Английский", "Французский", "Немецкий" };
+
     @FXML
     private TableView coursesTable;
 
@@ -50,6 +50,19 @@ public class WorkspaceViewController {
     private TableColumn priceColumn;
 
 
+    @FXML
+    private Slider moreThanSlider;
+
+    @FXML
+    private Slider lessThanSlider;
+
+    @FXML
+    private ChoiceBox languageFilter;
+
+    @FXML
+    private ChoiceBox levelFilter;
+
+
     private List<Course> courses = new ArrayList<>();
 
 
@@ -57,6 +70,7 @@ public class WorkspaceViewController {
     @FXML
     public void initialize() {
         initTableComponent();
+        initFilterBox();
     }
 
     private void fillTable() {
@@ -113,6 +127,20 @@ public class WorkspaceViewController {
         return null;
     }
 
+    private void initFilterBox() {
+        languageFilter.setItems(FXCollections.observableArrayList(languages));
+        levelFilter.setItems(FXCollections.observableArrayList(levels));
+
+
+        BigDecimal max = Collections.max(courses, Comparator.comparing(Course::getPrice)).getPrice();
+        BigDecimal min = Collections.min(courses, Comparator.comparing(Course::getPrice)).getPrice();
+
+        moreThanSlider.setMax(max.doubleValue());
+        moreThanSlider.setMin(min.doubleValue());
+
+        lessThanSlider.setMax(max.doubleValue());
+        lessThanSlider.setMin(min.doubleValue());
+    }
 
 
     private class ButtonCell extends TableCell<Course, Boolean> {
