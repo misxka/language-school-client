@@ -6,9 +6,6 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +20,7 @@ import org.verigo.course_project_client.models.Course;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -51,10 +49,7 @@ public class WorkspaceViewController {
 
 
     @FXML
-    private Slider moreThanSlider;
-
-    @FXML
-    private Slider lessThanSlider;
+    private Slider priceSlider;
 
     @FXML
     private ChoiceBox languageFilter;
@@ -68,6 +63,12 @@ public class WorkspaceViewController {
     @FXML
     private CheckBox onlineFilter;
 
+    @FXML
+    private CheckBox offlineFilter;
+
+    @FXML
+    private TextField maxPriceOutput;
+
 
     private List<Course> courses = new ArrayList<>();
     private List<Course> filteredCourses = new ArrayList<>();
@@ -77,11 +78,15 @@ public class WorkspaceViewController {
     private String languageRequested = "";
     private String levelRequested = "";
     private boolean onlineRequested = true;
+    private boolean offlineRequested = true;
+    private BigDecimal priceRequested;
 
     private Predicate<Course> titlePredicate = course -> course.getTitle().toLowerCase(Locale.ROOT).contains(titleRequested.toLowerCase(Locale.ROOT));
     private Predicate<Course> languagePredicate = course -> course.getLanguage().toLowerCase(Locale.ROOT).contains(languageRequested.toLowerCase(Locale.ROOT));
-    private Predicate<Course> levelPredicate = course -> course.getLevel().toLowerCase(Locale.ROOT).contains(levelRequested.toLowerCase(Locale.ROOT));
+    private Predicate<Course> levelPredicate = course -> levelRequested.equals("") ? true : course.getLevel().toLowerCase(Locale.ROOT).equals(levelRequested.toLowerCase(Locale.ROOT));
     private Predicate<Course> onlinePredicate = course -> course.getIsOnline() == onlineRequested;
+    private Predicate<Course> offlinePredicate = course -> course.getIsOnline() != offlineRequested;
+    private Predicate<Course> pricePredicate = course -> course.getPrice().compareTo(priceRequested) <= 0;
 
 
     @FXML
@@ -93,7 +98,7 @@ public class WorkspaceViewController {
     }
 
     private void applyFilters() {
-        filteredCourses = courses.stream().filter(titlePredicate.and(languagePredicate).and(levelPredicate).and(onlinePredicate)).collect(Collectors.toList());
+        filteredCourses = courses.stream().filter(titlePredicate.and(languagePredicate).and(levelPredicate).and(onlinePredicate.or(offlinePredicate)).and(pricePredicate)).collect(Collectors.toList());
         coursesTable.setItems(FXCollections.observableArrayList(filteredCourses));
     }
 
@@ -116,6 +121,20 @@ public class WorkspaceViewController {
         onlineFilter.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
             onlineRequested = newValue;
             applyFilters();
+        });
+
+        offlineFilter.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+            offlineRequested = newValue;
+            applyFilters();
+        });
+
+        priceSlider.setOnMouseReleased(event -> {
+            priceRequested = BigDecimal.valueOf(priceSlider.getValue());
+            applyFilters();
+        });
+
+        priceSlider.setOnMouseDragged(event -> {
+            maxPriceOutput.setText(String.valueOf(new BigDecimal(priceSlider.getValue()).setScale(2, RoundingMode.HALF_EVEN)));
         });
     }
 
@@ -178,11 +197,10 @@ public class WorkspaceViewController {
         BigDecimal max = Collections.max(courses, Comparator.comparing(Course::getPrice)).getPrice();
         BigDecimal min = Collections.min(courses, Comparator.comparing(Course::getPrice)).getPrice();
 
-        moreThanSlider.setMax(max.doubleValue());
-        moreThanSlider.setMin(min.doubleValue());
+        priceSlider.setMax(max.doubleValue());
+        priceSlider.setMin(min.doubleValue());
 
-        lessThanSlider.setMax(max.doubleValue());
-        lessThanSlider.setMin(min.doubleValue());
+        priceRequested = max;
     }
 
 
