@@ -41,7 +41,7 @@
                <font>
                   <Font size="14.0" />
                </font></PasswordField>
-            <Button fx:id="loginBtn" mnemonicParsing="false" onAction="#onLoginBtnClick" prefHeight="26.0" prefWidth="91.0" style="-fx-background-color: #46aae8;" text="Войти" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <Button fx:id="loginBtn" mnemonicParsing="false" onAction="#onLoginBtnClick" prefHeight="26.0" prefWidth="91.0" style="-fx-background-color: #46aae8; -fx-cursor: hand;" text="Войти" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="4">
                <font>
                   <Font size="14.0" />
                </font>
