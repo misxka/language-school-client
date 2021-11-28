@@ -7,14 +7,18 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Side;
 import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.verigo.course_project_client.MainApplication;
+import org.verigo.course_project_client.constraints.ROLE;
 import org.verigo.course_project_client.models.Course;
 
 import java.io.IOException;
@@ -27,7 +31,7 @@ import java.util.stream.Collectors;
 
 public class CoursesViewController {
     private final String[] levels = { "A1", "A1+", "A2", "A2+", "B1", "B1+", "B2", "B2+", "C1", "C1+", "C2", "C2+" };
-    private final String[] languages = { "Английский", "Французский", "Немецкий" };
+    private Set<String> languages = new HashSet<>();
 
     @FXML
     private TableView coursesTable;
@@ -69,6 +73,12 @@ public class CoursesViewController {
     @FXML
     private TextField maxPriceOutput;
 
+    @FXML
+    private PieChart languagesPieChart;
+
+    @FXML
+    private TextField totalCoursesAmount;
+
 
     private List<Course> courses = new ArrayList<>();
     private List<Course> filteredCourses = new ArrayList<>();
@@ -91,10 +101,16 @@ public class CoursesViewController {
 
     @FXML
     public void initialize() {
+        courses = getAllCourses();
+        initLanguages();
+
         initTableComponent();
         initFilterBox();
 
         addFilterListeners();
+
+        totalCoursesAmount.setText(String.valueOf(courses.size()));
+        initPieChart();
     }
 
     private void applyFilters() {
@@ -167,8 +183,6 @@ public class CoursesViewController {
 
         coursesTable.getColumns().addAll(moreInfoColumn);
 
-        courses = getAllCourses();
-
         //TODO setTableEditing();
 
         fillTable();
@@ -202,8 +216,6 @@ public class CoursesViewController {
 
         priceRequested = max;
     }
-
-
 
     private class ButtonCell extends TableCell<Course, Boolean> {
         final Button cellButton = new Button("Подробнее");
@@ -246,6 +258,39 @@ public class CoursesViewController {
                 setGraphic(cellButton);
             }
         }
+    }
+
+    private void initLanguages() {
+        courses.forEach(course -> {
+            languages.add(course.getLanguage());
+        });
+    }
+
+    private void initPieChart() {
+        List<PieChart.Data> chartDataList = new ArrayList<>();
+        languages.forEach(language -> {
+            chartDataList.add(new PieChart.Data(language, filterByLanguage(language)));
+        });
+
+        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(chartDataList);
+
+        languagesPieChart.setData(pieChartData);
+
+        languagesPieChart.getData().forEach(data -> {
+            int amountValue = (int) data.getPieValue();
+            String signature;
+            if(amountValue == 1) signature = "курс";
+            else if(amountValue >= 2 && amountValue < 5) signature = "курса";
+            else signature = "курсов";
+            String amountString = amountValue + " " + signature;
+            Tooltip toolTip = new Tooltip(amountString);
+            toolTip.setStyle("-fx-font-size: 14");
+            Tooltip.install(data.getNode(), toolTip);
+        });
+    }
+
+    private int filterByLanguage(String language) {
+        return courses.stream().filter(course -> course.getLanguage().equals(language)).collect(Collectors.toList()).size();
     }
 }
 

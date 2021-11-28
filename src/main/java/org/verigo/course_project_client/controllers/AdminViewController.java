@@ -419,8 +419,14 @@ public class AdminViewController {
         this.usersPieChart.setLegendSide(Side.BOTTOM);
 
         usersPieChart.getData().forEach(data -> {
-            String percentage = (int) data.getPieValue() + " пользователей";
-            Tooltip toolTip = new Tooltip(percentage);
+            int amountValue = (int) data.getPieValue();
+            String signature;
+            if(amountValue == 1) signature = "пользователь";
+            else if(amountValue >= 2 && amountValue < 5) signature = "пользователя";
+            else signature = "пользователей";
+            String amountString = amountValue + " " + signature;
+            Tooltip toolTip = new Tooltip(amountString);
+            toolTip.setStyle("-fx-font-size: 14");
             Tooltip.install(data.getNode(), toolTip);
         });
     }

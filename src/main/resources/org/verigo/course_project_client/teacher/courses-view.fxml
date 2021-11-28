@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
@@ -8,7 +9,7 @@
    <children>
       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
          <children>
-            <TableView fx:id="coursesTable" layoutX="14.0" layoutY="14.0" prefHeight="368.0" prefWidth="686.0">
+            <TableView fx:id="coursesTable" layoutX="14.0" layoutY="14.0" prefHeight="340.0" prefWidth="686.0">
               <columns>
                 <TableColumn fx:id="titleColumn" prefWidth="203.40000915527344" text="Название" />
                 <TableColumn fx:id="languageColumn" minWidth="8.20001220703125" prefWidth="124.79998779296875" text="Язык" />
@@ -61,5 +62,16 @@
             </AnchorPane>
          </children>
       </AnchorPane>
+      <Label layoutX="14.0" layoutY="374.0" text="Всего курсов:">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="totalCoursesAmount" editable="false" layoutX="113.0" layoutY="369.0" prefHeight="26.0" prefWidth="42.0">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </TextField>
+      <PieChart fx:id="languagesPieChart" layoutX="49.0" layoutY="326.0" legendSide="LEFT" prefHeight="340.0" prefWidth="519.0" />
    </children>
 </AnchorPane>
