@@ -17,7 +17,7 @@
           <RowConstraints minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" prefHeight="190.0" prefWidth="190.0" style="-fx-background-color: #46aae8; -fx-cursor: hand;" text="Мои курсы" textAlignment="CENTER" textFill="WHITE" wrapText="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+            <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#onCoursesBtnClick" prefHeight="190.0" prefWidth="190.0" style="-fx-background-color: #46aae8; -fx-cursor: hand;" text="Мои курсы" textAlignment="CENTER" textFill="WHITE" wrapText="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                 <graphic>
                     <FontIcon iconColor="white" iconLiteral="fas-book" iconSize="50" />
                 </graphic>
@@ -33,7 +33,7 @@
                   <Font size="20.0" />
                </font>
             </Button>
-            <Button fx:id="workspaceBtn" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#onWorkspaceBtnClick" prefHeight="190.0" prefWidth="190.0" style="-fx-background-color: #46aae8; -fx-cursor: hand;" text="Мастерская преподавателя" textAlignment="CENTER" textFill="WHITE" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+            <Button fx:id="workspaceBtn" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#onWorkspaceBtnClick" prefHeight="190.0" prefWidth="190.0" style="-fx-background-color: #46aae8; -fx-cursor: hand;" text="Разработки преподавателя" textAlignment="CENTER" textFill="WHITE" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                 <graphic>
                     <FontIcon iconColor="white" iconLiteral="fas-tools" iconSize="50" />
                 </graphic>

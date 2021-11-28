@@ -25,6 +25,11 @@ public class TeacherViewController {
     }
 
     @FXML
+    public void onCoursesBtnClick(ActionEvent event) {
+        loadStage("teacher/courses-view.fxml");
+    }
+
+    @FXML
     public void onWorkspaceBtnClick(ActionEvent event) {
         loadStage("teacher/workspace-view.fxml");
     }

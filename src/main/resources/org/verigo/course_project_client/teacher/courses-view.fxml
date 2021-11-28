@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.verigo.course_project_client.controllers.teacher.CoursesViewController">
+   <children>
+      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+         <children>
+            <TableView fx:id="coursesTable" layoutX="14.0" layoutY="14.0" prefHeight="368.0" prefWidth="686.0">
+              <columns>
+                <TableColumn fx:id="titleColumn" prefWidth="203.40000915527344" text="Название" />
+                <TableColumn fx:id="languageColumn" minWidth="8.20001220703125" prefWidth="124.79998779296875" text="Язык" />
+                <TableColumn fx:id="levelColumn" minWidth="0.0" prefWidth="65.60003662109375" text="Уровень" />
+                <TableColumn fx:id="onlineColumn" prefWidth="67.0" text="Онлайн" />
+                <TableColumn fx:id="priceColumn" prefWidth="79.0" text="Цена" />
+              </columns>
+            </TableView>
+            <AnchorPane fx:id="filterBox" layoutX="718.0" layoutY="15.0" prefHeight="366.0" prefWidth="243.0">
+               <children>
+                  <TextField fx:id="titleFilter" layoutX="14.0" layoutY="14.0" promptText="Поиск по названию">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </TextField>
+                  <CheckBox fx:id="onlineFilter" layoutX="12.0" layoutY="221.0" mnemonicParsing="false" selected="true" text="Онлайн">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </CheckBox>
+                  <ChoiceBox fx:id="levelFilter" layoutX="14.0" layoutY="145.0" prefHeight="26.0" prefWidth="176.0" />
+                  <ChoiceBox fx:id="languageFilter" layoutX="14.0" layoutY="82.0" prefHeight="26.0" prefWidth="176.0" />
+                  <Slider fx:id="priceSlider" layoutX="17.0" layoutY="295.0" showTickLabels="true" showTickMarks="true" />
+                  <Label layoutX="17.0" layoutY="269.0" text="Макс. цена">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="14.0" layoutY="63.0" text="Язык:">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Label>
+                  <Label layoutX="14.0" layoutY="127.0" text="Уровень языка:">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <CheckBox fx:id="offlineFilter" layoutX="116.0" layoutY="221.0" mnemonicParsing="false" selected="true" text="Офлайн">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </CheckBox>
+                  <Label layoutX="77.0" layoutY="194.0" text="Формат">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="maxPriceOutput" editable="false" layoutX="169.0" layoutY="289.0" prefHeight="26.0" prefWidth="70.0" />
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
