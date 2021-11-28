@@ -83,7 +83,14 @@
                         </Label>
                      </children>
                   </GridPane>
-                  <Button layoutX="1061.0" layoutY="14.0" mnemonicParsing="false" onAction="#onRefreshTable" style="-fx-background-color: #46aae8;" text="Обновить таблицу" textFill="WHITE" />
+                  <Button layoutX="1023.0" layoutY="14.0" mnemonicParsing="false" onAction="#onRefreshTable" style="-fx-background-color: #46aae8;" text="Обновить таблицу" textFill="WHITE">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <graphic>
+                         <FontIcon iconColor="white" iconLiteral="fas-sync-alt" iconSize="14" />
+                     </graphic>
+                  </Button>
                   <Button fx:id="deleteUserButton" disable="true" graphicTextGap="10" layoutX="20.0" layoutY="660.0" mnemonicParsing="false" onAction="#handleDelete" style="-fx-background-color: #ff4f4f" text="Удалить пользователя">
                      <font>
                         <Font size="14.0" />

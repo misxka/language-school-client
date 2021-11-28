@@ -6,8 +6,10 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
@@ -15,11 +17,16 @@ import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.verigo.course_project_client.MainApplication;
 import org.verigo.course_project_client.constraints.ROLE;
 import org.verigo.course_project_client.models.Course;
+import org.verigo.course_project_client.models.Task;
+import org.verigo.course_project_client.models.User;
+import org.verigo.course_project_client.models.UserAdapter;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -46,7 +53,7 @@ public class CoursesViewController {
     private TableColumn levelColumn;
 
     @FXML
-    private TableColumn onlineColumn;
+    private TableColumn<Course, FontIcon> onlineColumn;
 
     @FXML
     private TableColumn priceColumn;
@@ -102,9 +109,17 @@ public class CoursesViewController {
     @FXML
     public void initialize() {
         courses = getAllCourses();
-        initLanguages();
 
         initTableComponent();
+
+        initActions();
+    }
+
+    private void initActions() {
+        initLanguages();
+
+        fillTable();
+
         initFilterBox();
 
         addFilterListeners();
@@ -162,30 +177,33 @@ public class CoursesViewController {
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         languageColumn.setCellValueFactory(new PropertyValueFactory<>("language"));
         levelColumn.setCellValueFactory(new PropertyValueFactory<>("level"));
-        onlineColumn.setCellValueFactory(new PropertyValueFactory<>("isOnline"));
-        onlineColumn.setCellFactory(col -> new TableCell<Course, Boolean>() {
-            @Override
-            protected void updateItem(Boolean item, boolean empty) {
-                super.updateItem(item, empty) ;
-                setText(empty ? null : item ? "да" : "нет" );
-            }
+        levelColumn.setStyle("-fx-alignment: CENTER");
+        onlineColumn.setCellValueFactory(data -> {
+            boolean value = data.getValue().getIsOnline();
+            FontIcon trueIcon = new FontIcon("fas-check");
+            trueIcon.setIconColor(Color.GREEN);
+            trueIcon.setIconSize(14);
+
+            FontIcon falseIcon = new FontIcon("fas-times");
+            falseIcon.setIconColor(Color.RED);
+            falseIcon.setIconSize(14);
+
+            return (value == true ? new SimpleObjectProperty<>(trueIcon) : new SimpleObjectProperty<>(falseIcon));
         });
+        onlineColumn.setStyle("-fx-alignment: CENTER");
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        priceColumn.setStyle("-fx-alignment: CENTER");
 
 
         TableColumn moreInfoColumn = new TableColumn<>("Подробнее");
         moreInfoColumn.setMaxWidth(100);
         moreInfoColumn.setPrefWidth(100);
         moreInfoColumn.setSortable(false);
-        moreInfoColumn.setCellFactory((Callback<TableColumn<Course, Boolean>, TableCell<Course, Boolean>>) p ->
-            new ButtonCell());
+        moreInfoColumn.setStyle("-fx-alignment: CENTER");
+        moreInfoColumn.setCellFactory((Callback<TableColumn<Course, Boolean>, TableCell<Course, Boolean>>) p -> new ButtonCell());
 
 
         coursesTable.getColumns().addAll(moreInfoColumn);
-
-        //TODO setTableEditing();
-
-        fillTable();
     }
 
     private ArrayList<Course> getAllCourses() {
@@ -291,6 +309,13 @@ public class CoursesViewController {
 
     private int filterByLanguage(String language) {
         return courses.stream().filter(course -> course.getLanguage().equals(language)).collect(Collectors.toList()).size();
+    }
+
+    @FXML
+    private void onRefreshTable(ActionEvent actionEvent) {
+        courses = getAllCourses();
+
+        initActions();
     }
 }
 
