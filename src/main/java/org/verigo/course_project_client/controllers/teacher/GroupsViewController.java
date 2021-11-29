@@ -8,6 +8,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -35,6 +36,7 @@ public class GroupsViewController {
     private User loggedUser = UserProvider.getInstance().getUser();
     private List<Integer> groupsIds = new ArrayList<>();
     private List<CourseGroup> groups = new ArrayList<>();
+    private ObservableList<CourseGroup> observableGroups;
 
     @FXML
     private AnchorPane groupsTableContainer;
@@ -63,6 +65,7 @@ public class GroupsViewController {
         groupsIds.forEach(id -> {
             groups.add(getGroup(id));
         });
+        observableGroups = FXCollections.observableArrayList(groups);
     }
 
     private List<Integer> getGroupsIds() {
@@ -100,7 +103,7 @@ public class GroupsViewController {
     }
 
     private void fillTable() {
-        groupsTable.setItems(FXCollections.observableArrayList(groups));
+        groupsTable.setItems(observableGroups);
     }
 
 
@@ -112,10 +115,11 @@ public class GroupsViewController {
             cellButton.setStyle("-fx-font-size: 14");
 
             cellButton.setOnAction(t -> {
-                CourseGroup group = groups.get(getTableRow().getIndex());
+                CourseGroup group = observableGroups.get(getTableRow().getIndex());
                 int id = group.getId();
 
                 //TODO Here add new table that contains info about participants
+                //TODO Use observableGroups
             });
 
             emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
