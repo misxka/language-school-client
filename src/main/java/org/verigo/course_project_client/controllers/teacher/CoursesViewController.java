@@ -89,7 +89,7 @@ public class CoursesViewController {
 
     private List<Course> courses = new ArrayList<>();
     private List<Course> filteredCourses = new ArrayList<>();
-
+    private ObservableList<Course> observableCourses;
 
     private String titleRequested = "";
     private String languageRequested = "";
@@ -109,6 +109,7 @@ public class CoursesViewController {
     @FXML
     public void initialize() {
         courses = getAllCourses();
+        observableCourses = FXCollections.observableArrayList(courses);
 
         initTableComponent();
 
@@ -130,7 +131,8 @@ public class CoursesViewController {
 
     private void applyFilters() {
         filteredCourses = courses.stream().filter(titlePredicate.and(languagePredicate).and(levelPredicate).and(onlinePredicate.or(offlinePredicate)).and(pricePredicate)).collect(Collectors.toList());
-        coursesTable.setItems(FXCollections.observableArrayList(filteredCourses));
+        observableCourses = FXCollections.observableArrayList(filteredCourses);
+        coursesTable.setItems(observableCourses);
     }
 
     private void addFilterListeners() {
@@ -170,7 +172,7 @@ public class CoursesViewController {
     }
 
     private void fillTable() {
-        coursesTable.setItems(FXCollections.observableArrayList(courses));
+        coursesTable.setItems(observableCourses);
     }
 
     private void initTableComponent() {
@@ -240,7 +242,7 @@ public class CoursesViewController {
 
         ButtonCell(){
             cellButton.setOnAction(t -> {
-                Course course = courses.get(getTableRow().getIndex());
+                Course course = observableCourses.get(getTableRow().getIndex());
                 int id = course.getId();
 
                 Stage stage = new Stage();
@@ -314,6 +316,7 @@ public class CoursesViewController {
     @FXML
     private void onRefreshTable(ActionEvent actionEvent) {
         courses = getAllCourses();
+        observableCourses = FXCollections.observableArrayList(courses);
 
         initActions();
     }
