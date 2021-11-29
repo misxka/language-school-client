@@ -12,8 +12,8 @@ public final class UserProvider {
         return INSTANCE;
     }
 
-    public void setUser(User u) {
-        this.user = u;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public User getUser() {

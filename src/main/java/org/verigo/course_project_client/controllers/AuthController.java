@@ -72,8 +72,9 @@ public class AuthController {
             return;
         }
 
-        UserProvider holder = UserProvider.getInstance();
-        holder.setUser(response.getUser());
+        UserProvider provider = UserProvider.getInstance();
+        provider.setUser(response.getUser());
+
 
         if(response.getUser().getRole().getId() == ROLE.ADMIN)
             openAdminWindow();

@@ -1,6 +1,8 @@
 package org.verigo.course_project_client.models;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public class User {
     private final Integer id;
@@ -11,8 +13,11 @@ public class User {
     private final Date updatedAt;
     private final Role role;
     private final String password;
+    private Set<CourseGroup> groups = new HashSet<>();
+    private Set<UserTaskResult> tasksResults;
 
-    public User(Integer id, String login, String surname, String name, Date createdAt, Date updatedAt, Role role) {
+
+    public User(Integer id, String login, String surname, String name, Date createdAt, Date updatedAt, Role role, Set<CourseGroup> groups, Set<UserTaskResult> tasksResults) {
         this.id = id;
         this.login = login;
         this.name = name;
@@ -21,9 +26,11 @@ public class User {
         this.updatedAt = updatedAt;
         this.role = role;
         this.password = "";
+        this.groups = groups;
+        this.tasksResults = tasksResults;
     }
 
-    public User(Integer id, String login, String surname, String name, Date createdAt, Date updatedAt, Role role, String password) {
+    public User(Integer id, String login, String surname, String name, Date createdAt, Date updatedAt, Role role, String password, Set<CourseGroup> groups, Set<UserTaskResult> tasksResults) {
         this.id = id;
         this.login = login;
         this.name = name;
@@ -32,6 +39,8 @@ public class User {
         this.updatedAt = updatedAt;
         this.role = role;
         this.password = password;
+        this.groups = groups;
+        this.tasksResults = tasksResults;
     }
 
     public User(UserAdapter userAdapter) {
@@ -44,6 +53,7 @@ public class User {
         this.password = userAdapter.getPassword();
         this.role = new Role(userAdapter.getRoleName());
     }
+
 
     public Role getRole() {
         return role;
@@ -75,5 +85,22 @@ public class User {
 
     public Date getCreatedAt() {
         return createdAt;
+    }
+
+
+    public Set<CourseGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<CourseGroup> groups) {
+        this.groups = groups;
+    }
+
+    public Set<UserTaskResult> getTasksResults() {
+        return tasksResults;
+    }
+
+    public void setTasksResults(Set<UserTaskResult> tasksResults) {
+        this.tasksResults = tasksResults;
     }
 }

@@ -6,10 +6,11 @@ import java.util.Set;
 public class CourseGroup {
     private Integer id;
 
+    private String name;
+
     private Course course;
 
     private Set<User> participants = new HashSet<>();
-
 
 
     public Integer getId() {
@@ -24,6 +25,9 @@ public class CourseGroup {
         return course;
     }
 
+    public String getName() {
+        return name;
+    }
 
     public void setId(Integer id) {
         this.id = id;
@@ -39,5 +43,9 @@ public class CourseGroup {
 
     public void addParticipants(User user) {
         this.participants.add(user);
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

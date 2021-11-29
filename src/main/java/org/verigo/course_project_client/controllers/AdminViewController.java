@@ -158,7 +158,7 @@ public class AdminViewController {
         name = addNameField.getText();
         password = this.addPasswordField.getText();
 
-        User user = new User(null, login, surname, name, new Date(), new Date(), new Role(role), password);
+        User user = new User(null, login, surname, name, new Date(), new Date(), new Role(role), password, null, null);
 
         User createdUser = addUser(user);
 
