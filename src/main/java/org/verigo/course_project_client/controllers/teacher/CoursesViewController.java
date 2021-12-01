@@ -6,13 +6,13 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import io.github.cdimascio.dotenv.Dotenv;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
@@ -22,11 +22,8 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.verigo.course_project_client.MainApplication;
-import org.verigo.course_project_client.constraints.ROLE;
 import org.verigo.course_project_client.models.Course;
-import org.verigo.course_project_client.models.Task;
-import org.verigo.course_project_client.models.User;
-import org.verigo.course_project_client.models.UserAdapter;
+import org.verigo.course_project_client.store.DotenvProvider;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -37,6 +34,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class CoursesViewController {
+    Dotenv dotenv = DotenvProvider.getInstance().getDotenv();
+
     private final String[] levels = { "A1", "A1+", "A2", "A2+", "B1", "B1+", "B2", "B2+", "C1", "C1+", "C2", "C2+" };
     private Set<String> languages = new HashSet<>();
 
@@ -210,7 +209,7 @@ public class CoursesViewController {
 
     private ArrayList<Course> getAllCourses() {
         try {
-            HttpResponse<JsonNode> apiResponse = Unirest.get("http://localhost:8080/courses/")
+            HttpResponse<JsonNode> apiResponse = Unirest.get(dotenv.get("HOST") + "/courses/")
                     .header("Content-Type", "application/json")
                     .asJson();
 
@@ -320,6 +319,8 @@ public class CoursesViewController {
 
         initActions();
     }
+
+    //TODO Resolve an exception appearing on refresh when filter is enabled
 }
 
 

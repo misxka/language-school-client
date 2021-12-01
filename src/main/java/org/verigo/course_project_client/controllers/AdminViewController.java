@@ -6,6 +6,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import io.github.cdimascio.dotenv.Dotenv;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,6 +22,7 @@ import org.verigo.course_project_client.constraints.ROLE;
 import org.verigo.course_project_client.models.Role;
 import org.verigo.course_project_client.models.UserAdapter;
 import org.verigo.course_project_client.models.User;
+import org.verigo.course_project_client.store.DotenvProvider;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -29,7 +31,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//TODO Update metrics on data change or table reload
+
 public class AdminViewController {
+    Dotenv dotenv = DotenvProvider.getInstance().getDotenv();
+
     private static final String pattern = "^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+){8,}$";
     private static final String namePattern = "^([а-яА-Я]){2,}$";
     private static final String minRequirement = "Минимум 8 символов, 1 буква и 1 цифра";
@@ -324,7 +330,7 @@ public class AdminViewController {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
-            HttpResponse<JsonNode> apiResponse = Unirest.post("http://localhost:8080/users/")
+            HttpResponse<JsonNode> apiResponse = Unirest.post(dotenv.get("HOST") + "/users/")
                     .header("Content-Type", "application/json")
                     .body("{\"login\": \"" + user.getLogin() + "\", \"password\": \""
                             + user.getPassword() + "\", \"surname\": \""
@@ -348,7 +354,7 @@ public class AdminViewController {
 
     private ArrayList<User> getAllUsers() {
         try {
-            HttpResponse<JsonNode> apiResponse = Unirest.get("http://localhost:8080/users/")
+            HttpResponse<JsonNode> apiResponse = Unirest.get(dotenv.get("HOST") + "/users/")
                     .header("Content-Type", "application/json")
                     .asJson();
 
@@ -366,7 +372,7 @@ public class AdminViewController {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
-            HttpResponse<JsonNode> apiResponse = Unirest.put("http://localhost:8080/users/" + user.getId())
+            HttpResponse<JsonNode> apiResponse = Unirest.put(dotenv.get("HOST") + "/users/" + user.getId())
                     .header("Content-Type", "application/json")
                     .body("{\"login\": \"" + user.getLogin() + "\", \"password\": \""
                             + user.getPassword() + "\", \"surname\": \""
@@ -390,7 +396,7 @@ public class AdminViewController {
 
     private String deleteUser(int id) {
         try {
-            HttpResponse<JsonNode> apiResponse = Unirest.delete("http://localhost:8080/users/" + id)
+            HttpResponse<JsonNode> apiResponse = Unirest.delete(dotenv.get("HOST") + "/users/" + id)
                     .header("Content-Type", "application/json")
                     .asJson();
 

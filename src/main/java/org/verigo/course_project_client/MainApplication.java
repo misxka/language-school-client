@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.verigo.course_project_client.store.DotenvProvider;
 
 import java.io.IOException;
 

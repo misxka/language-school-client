@@ -14,6 +14,7 @@ module org.verigo.course_project_client {
 
     requires gson;
     requires java.sql;
+    requires java.dotenv;
 
     opens org.verigo.course_project_client to javafx.fxml;
 

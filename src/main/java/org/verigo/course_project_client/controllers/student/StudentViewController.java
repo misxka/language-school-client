@@ -1,5 +1,6 @@
 package org.verigo.course_project_client.controllers.student;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,10 +8,13 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.verigo.course_project_client.MainApplication;
+import org.verigo.course_project_client.store.DotenvProvider;
 
 import java.io.IOException;
 
 public class StudentViewController {
+    Dotenv dotenv = DotenvProvider.getInstance().getDotenv();
+
     @FXML
     public void initialize() {
 

@@ -6,33 +6,28 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import javafx.beans.property.SimpleObjectProperty;
+import io.github.cdimascio.dotenv.Dotenv;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.verigo.course_project_client.MainApplication;
-import org.verigo.course_project_client.models.Course;
 import org.verigo.course_project_client.models.CourseGroup;
 import org.verigo.course_project_client.models.User;
+import org.verigo.course_project_client.store.DotenvProvider;
 import org.verigo.course_project_client.store.UserProvider;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class GroupsViewController {
+    Dotenv dotenv = DotenvProvider.getInstance().getDotenv();
+
     private User loggedUser = UserProvider.getInstance().getUser();
     private List<Integer> groupsIds = new ArrayList<>();
     private List<CourseGroup> groups = new ArrayList<>();
@@ -74,7 +69,7 @@ public class GroupsViewController {
 
     private CourseGroup getGroup(int groupId) {
         try {
-            HttpResponse<JsonNode> apiResponse = Unirest.get("http://localhost:8080/course-groups/" + groupId)
+            HttpResponse<JsonNode> apiResponse = Unirest.get(dotenv.get("HOST") + "/course-groups/" + groupId)
                     .header("Content-Type", "application/json")
                     .asJson();
 

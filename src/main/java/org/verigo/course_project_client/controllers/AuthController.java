@@ -16,13 +16,16 @@ import javafx.stage.Stage;
 import org.verigo.course_project_client.MainApplication;
 import org.verigo.course_project_client.constraints.ROLE;
 import org.verigo.course_project_client.models.AuthResponse;
-import org.verigo.course_project_client.models.User;
+import org.verigo.course_project_client.store.DotenvProvider;
 import org.verigo.course_project_client.store.UserProvider;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.IOException;
 
 
 public class AuthController {
+    Dotenv dotenv = DotenvProvider.getInstance().getDotenv();
+
     private static final String pattern = "^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+){8,}$";
     private static final String minRequirement = "Минимум 8 символов, 1 буква и 1 цифра";
     private static final String wrongCredentials = "Данные неверны. Попробуйте ещё раз.";
@@ -86,7 +89,7 @@ public class AuthController {
 
     private AuthResponse handleLogin() {
         try {
-            HttpResponse<JsonNode> apiResponse = Unirest.post("http://localhost:8080/auth/")
+            HttpResponse<JsonNode> apiResponse = Unirest.post(dotenv.get("HOST") + "/auth/")
                     .header("Content-Type", "application/json")
                     .body("{\"login\": \"" + this.login + "\", \"password\": \"" + this.password + "\"}")
                     .asJson();

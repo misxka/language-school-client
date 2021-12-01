@@ -1,18 +1,12 @@
 package org.verigo.course_project_client.controllers.teacher;
 
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.javafx.Icon;
 import org.verigo.course_project_client.models.Course;
 import org.verigo.course_project_client.models.Task;
 
