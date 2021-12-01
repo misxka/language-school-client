@@ -1,0 +1,1 @@
+Main-Class: org.verigo.course_project_client.Main
