@@ -115,6 +115,7 @@ public class CoursesViewController {
         initTableComponent();
 
         initActions();
+        addFilterListeners();
     }
 
     private void initActions() {
@@ -123,8 +124,6 @@ public class CoursesViewController {
         fillTable();
 
         initFilterBox();
-
-        addFilterListeners();
 
         totalCoursesAmount.setText(String.valueOf(courses.size()));
         initPieChart();
@@ -143,12 +142,16 @@ public class CoursesViewController {
         });
 
         languageFilter.getSelectionModel().selectedIndexProperty().addListener((observableValue, number1, number2) -> {
-            languageRequested = (String) languageFilter.getItems().get((Integer) number2);
+            try {
+                languageRequested = (String) languageFilter.getItems().get((Integer) number2);
+            } catch (IndexOutOfBoundsException e) {}
             applyFilters();
         });
 
         levelFilter.getSelectionModel().selectedIndexProperty().addListener((observableValue, number1, number2) -> {
-            levelRequested = (String) levelFilter.getItems().get((Integer) number2);
+            try {
+                levelRequested = (String) levelFilter.getItems().get((Integer) number2);
+            } catch(IndexOutOfBoundsException e) {}
             applyFilters();
         });
 
@@ -234,12 +237,25 @@ public class CoursesViewController {
 
         priceSlider.setMax(max.doubleValue());
         priceSlider.setMin(min.doubleValue());
+        priceSlider.valueProperty().set(max.doubleValue());
+        maxPriceOutput.setText(String.valueOf(max.doubleValue()));
 
+        titleRequested = "";
+        languageRequested = "";
+        levelRequested = "";
+        onlineRequested = true;
+        offlineRequested = true;
         priceRequested = max;
     }
 
     private void clearFilters() {
-
+        titleFilter.setText("");
+        languageFilter.getSelectionModel().clearSelection();
+//        languageFilter.valueProperty().set(null);
+        levelFilter.getSelectionModel().clearSelection();
+//        levelFilter.valueProperty().set(null);
+        onlineFilter.setSelected(true);
+        offlineFilter.setSelected(true);
     }
 
     private class ButtonCell extends TableCell<Course, Boolean> {
@@ -323,12 +339,11 @@ public class CoursesViewController {
     @FXML
     private void onRefreshTable(ActionEvent actionEvent) {
         courses = getAllCourses();
+        clearFilters();
         observableCourses = FXCollections.observableArrayList(courses);
 
         initActions();
     }
-
-    //TODO Resolve an exception appearing on refresh when filter is enabled
 }
 
 
