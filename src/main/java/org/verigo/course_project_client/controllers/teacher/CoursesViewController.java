@@ -10,6 +10,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,9 +36,6 @@ import java.util.stream.Collectors;
 
 public class CoursesViewController {
     Dotenv dotenv = DotenvProvider.getInstance().getDotenv();
-
-    private final String[] levels = { "A1", "A1+", "A2", "A2+", "B1", "B1+", "B2", "B2+", "C1", "C1+", "C2", "C2+" };
-    private Set<String> languages = new HashSet<>();
 
     @FXML
     private TableView coursesTable;
@@ -89,6 +87,10 @@ public class CoursesViewController {
     private List<Course> courses = new ArrayList<>();
     private List<Course> filteredCourses = new ArrayList<>();
     private ObservableList<Course> observableCourses;
+
+    private final String[] levels = { "A1", "A1+", "A2", "A2+", "B1", "B1+", "B2", "B2+", "C1", "C1+", "C2", "C2+" };
+    private Set<String> languages = new HashSet<>();
+    private ObservableList<String> observableLanguages;
 
     private String titleRequested = "";
     private String languageRequested = "";
@@ -224,7 +226,7 @@ public class CoursesViewController {
     }
 
     private void initFilterBox() {
-        languageFilter.setItems(FXCollections.observableArrayList(languages));
+        languageFilter.setItems(observableLanguages);
         levelFilter.setItems(FXCollections.observableArrayList(levels));
 
         BigDecimal max = Collections.max(courses, Comparator.comparing(Course::getPrice)).getPrice();
@@ -234,6 +236,10 @@ public class CoursesViewController {
         priceSlider.setMin(min.doubleValue());
 
         priceRequested = max;
+    }
+
+    private void clearFilters() {
+
     }
 
     private class ButtonCell extends TableCell<Course, Boolean> {
@@ -280,14 +286,16 @@ public class CoursesViewController {
     }
 
     private void initLanguages() {
+        languages.clear();
         courses.forEach(course -> {
             languages.add(course.getLanguage());
         });
+        observableLanguages = FXCollections.observableArrayList(languages);
     }
 
     private void initPieChart() {
         List<PieChart.Data> chartDataList = new ArrayList<>();
-        languages.forEach(language -> {
+        observableLanguages.forEach(language -> {
             chartDataList.add(new PieChart.Data(language, filterByLanguage(language)));
         });
 
