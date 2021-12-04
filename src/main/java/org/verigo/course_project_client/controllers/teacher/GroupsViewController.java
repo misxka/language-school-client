@@ -1,34 +1,45 @@
 package org.verigo.course_project_client.controllers.teacher;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.http.options.Option;
+import com.mashape.unirest.http.options.Options;
 import io.github.cdimascio.dotenv.Dotenv;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.verigo.course_project_client.models.*;
 import org.verigo.course_project_client.store.DotenvProvider;
 import org.verigo.course_project_client.store.UserProvider;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.function.UnaryOperator;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class GroupsViewController {
@@ -193,11 +204,21 @@ public class GroupsViewController {
     }
 
     private void initScoresTable(User user, List<Integer> availableIds) {
+        Button updateRecordsBtn = new Button("Сохранить изменения");
+        updateRecordsBtn.setStyle("-fx-font-size: 14; -fx-background-color: #46aae8; -fx-text-fill: white");
+        updateRecordsBtn.setLayoutY(110);
+        updateRecordsBtn.setLayoutX(802);
+
+        updateRecordsBtn.setOnAction(event -> {
+            updateUser(user);
+        });
+
         TableView<User> scoresTable = new TableView<>();
         scoresTable.setLayoutX(14);
         scoresTable.setLayoutY(14);
         scoresTable.setPrefWidth(950);
         scoresTable.setPrefHeight(80);
+        scoresTable.setEditable(true);
 
         TableColumn<User, String> userNameColumn = new TableColumn<>("Студент");
         userNameColumn.setStyle("-fx-alignment: CENTER; -fx-font-size: 14");
@@ -216,6 +237,11 @@ public class GroupsViewController {
                 column.setStyle("-fx-alignment: CENTER; -fx-font-size: 14");
                 column.setSortable(false);
 
+                column.setCellFactory(col -> new IntegerEditingCell(1, 10));
+                column.setOnEditCommit(event -> {
+                    result.setPoints(Integer.parseInt(event.getNewValue()));
+                });
+
                 column.setCellValueFactory(data -> {
                     boolean isCompleted = result.isCompleted();
 
@@ -229,6 +255,147 @@ public class GroupsViewController {
 
         scoresTable.setItems(FXCollections.observableArrayList(user));
 
-        scoresTableContainer.getChildren().add(scoresTable);
+        scoresTableContainer.getChildren().addAll(scoresTable, updateRecordsBtn);
+    }
+
+    public class IntegerEditingCell extends TableCell<User, String> {
+
+        private TextField textField ;
+        private TextFormatter<Integer> textFormatter ;
+
+        public IntegerEditingCell(int min, int max) {
+            textField = new TextField();
+            UnaryOperator<TextFormatter.Change> filter = c -> {
+                String newText = c.getControlNewText() ;
+
+                if (newText.isEmpty()) {
+                    return c ;
+                }
+
+                if (! newText.matches("\\d+")) {
+                    return null ;
+                }
+
+                int value = Integer.parseInt(newText) ;
+                if (value < min || value > max) {
+                    return null ;
+                } else {
+                    return c ;
+                }
+            };
+
+            StringConverter<Integer> converter = new StringConverter<Integer>() {
+                @Override
+                public String toString(Integer value) {
+                    return value == null ? "" : value.toString() ;
+                }
+
+                @Override
+                public Integer fromString(String string) {
+                    if(string.matches("\\d+")) {
+                        return Integer.valueOf(string);
+                    } else {
+                        return Integer.valueOf(getItem());
+                    }
+                }
+            };
+
+            textFormatter = new TextFormatter<Integer>(converter, 0, filter) ;
+            textField.setTextFormatter(textFormatter);
+
+            textField.addEventFilter(KeyEvent.KEY_RELEASED, e -> {
+                if (e.getCode() == KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+
+            textField.setOnAction(e -> commitEdit(textField.getText()));
+
+            textProperty().bind(Bindings
+                .when(emptyProperty())
+                .then((String)null)
+                .otherwise(itemProperty().asString()));
+
+            setGraphic(textField);
+            setContentDisplay(ContentDisplay.TEXT_ONLY);
+        }
+
+        @Override
+        protected void updateItem(String value, boolean empty) {
+            super.updateItem(value, empty);
+            if (isEditing()) {
+                textField.requestFocus();
+                textField.selectAll();
+                setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            } else {
+                setContentDisplay(ContentDisplay.TEXT_ONLY);
+            }
+        }
+
+        @Override
+        public void startEdit() {
+            super.startEdit();
+            if(getItem() == "") textFormatter.setValue(0);
+            else textFormatter.setValue(Integer.valueOf(getItem()));
+            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            textField.requestFocus();
+            textField.selectAll();
+        }
+
+        @Override
+        public void commitEdit(String newValue) {
+            super.commitEdit(newValue);
+            setContentDisplay(ContentDisplay.TEXT_ONLY);
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setContentDisplay(ContentDisplay.TEXT_ONLY);
+        }
+
+    }
+
+
+    //API calls
+    private User updateUser(User user) {
+        try {
+            Unirest.setObjectMapper(new ObjectMapper() {
+                com.fasterxml.jackson.databind.ObjectMapper mapper
+                        = new com.fasterxml.jackson.databind.ObjectMapper();
+
+                public String writeValue(Object value) {
+                    try {
+                        return mapper.writeValueAsString(value);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        return String.valueOf(e);
+                    }
+                }
+
+                public <T> T readValue(String value, Class<T> valueType) {
+                    try {
+                        return mapper.readValue(value, valueType);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            });
+
+            HttpResponse<JsonNode> apiResponse = Unirest.patch(dotenv.get("HOST") + "/users/" + user.getId())
+                    .header("Content-Type", "application/json")
+                    .body(user)
+                    .asJson();
+
+            if(apiResponse.getStatus() == 400) return null;
+
+            User createdUser = new Gson().fromJson(apiResponse.getBody().toString(), User.class);
+
+            return createdUser;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

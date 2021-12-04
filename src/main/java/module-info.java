@@ -15,6 +15,7 @@ module org.verigo.course_project_client {
     requires gson;
     requires java.sql;
     requires java.dotenv;
+    requires com.fasterxml.jackson.databind;
 
     opens org.verigo.course_project_client to javafx.fxml;
 
@@ -27,4 +28,5 @@ module org.verigo.course_project_client {
     opens org.verigo.course_project_client.controllers.teacher to javafx.fxml;
     exports org.verigo.course_project_client.controllers.student;
     opens org.verigo.course_project_client.controllers.student to javafx.fxml;
+    exports org.verigo.course_project_client.models to com.fasterxml.jackson.databind;
 }

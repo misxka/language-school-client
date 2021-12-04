@@ -5,17 +5,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class User {
-    private final Integer id;
-    private final String login;
-    private final String surname;
-    private final String name;
-    private final Date createdAt;
-    private final Date updatedAt;
-    private final Role role;
-    private final String password;
+    private Integer id;
+    private String login;
+    private String surname;
+    private String name;
+    private Date createdAt;
+    private Date updatedAt;
+    private Role role;
+    private String password;
     private Set<CourseGroup> groups = new HashSet<>();
     private Set<UserTaskResult> tasksResults;
 
+
+    public User() {
+
+    }
 
     public User(Integer id, String login, String surname, String name, Date createdAt, Date updatedAt, Role role, Set<CourseGroup> groups, Set<UserTaskResult> tasksResults) {
         this.id = id;
