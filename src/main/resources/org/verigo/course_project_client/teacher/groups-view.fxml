@@ -7,13 +7,13 @@
    <children>
       <AnchorPane fx:id="groupsTableContainer" prefHeight="650.0" prefWidth="500.0">
          <children>
-            <TableView fx:id="groupsTable" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="300.0">
+            <TableView fx:id="groupsTable" layoutX="14.0" layoutY="14.0" prefHeight="340.0" prefWidth="319.0">
               <columns>
                 <TableColumn fx:id="groupNameColumn" prefWidth="150.0" text="Название" />
               </columns>
             </TableView>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="participantsTableContainer" layoutX="500.0" prefHeight="650.0" prefWidth="500.0" />
+      <AnchorPane fx:id="participantsTableContainer" layoutX="420.0" prefHeight="650.0" prefWidth="580.0" />
    </children>
 </AnchorPane>

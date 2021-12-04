@@ -7,14 +7,18 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.github.cdimascio.dotenv.Dotenv;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.verigo.course_project_client.models.Course;
 import org.verigo.course_project_client.models.CourseGroup;
 import org.verigo.course_project_client.models.User;
 import org.verigo.course_project_client.store.DotenvProvider;
@@ -23,6 +27,7 @@ import org.verigo.course_project_client.store.UserProvider;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GroupsViewController {
@@ -88,6 +93,7 @@ public class GroupsViewController {
         groupNameColumn.setStyle("-fx-alignment: CENTER; -fx-font-size: 14");
 
         TableColumn groupInfoColumn = new TableColumn<>("Подробнее");
+        groupInfoColumn.setStyle("-fx-alignment: CENTER; -fx-font-size: 14");
         groupInfoColumn.setMaxWidth(150);
         groupInfoColumn.setPrefWidth(150);
         groupInfoColumn.setSortable(false);
@@ -110,11 +116,22 @@ public class GroupsViewController {
             cellButton.setStyle("-fx-font-size: 14");
 
             cellButton.setOnAction(t -> {
+                participantsTableContainer.getChildren().clear();
                 CourseGroup group = observableGroups.get(getTableRow().getIndex());
-                int id = group.getId();
 
-                //TODO Here add new table that contains info about participants
-                //TODO Use observableGroups
+                Label groupName = new Label();
+                groupName.setLayoutX(14);
+                groupName.setLayoutY(14);
+                groupName.setStyle("-fx-font-size: 20; -fx-text-fill: #46aae8");
+
+                participantsTableContainer.getChildren().add(groupName);
+                groupName.setText(group.getName());
+
+                TableView participantsTable = new TableView();
+                Set<User> participants = group.getParticipants();
+                participants.removeIf(participant -> participant.getId() == loggedUser.getId());
+                initParticipantsTable(participantsTable, participants);
+                participantsTableContainer.getChildren().add(participantsTable);
             });
 
             emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
@@ -133,5 +150,29 @@ public class GroupsViewController {
                 setGraphic(cellButton);
             }
         }
+    }
+
+    private void initParticipantsTable(TableView table, Set<User> participants) {
+        table.setLayoutX(14);
+        table.setLayoutY(54);
+        table.setPrefHeight(300);
+        table.setPrefWidth(450);
+
+        TableColumn loginColumn = new TableColumn("Логин");
+        loginColumn.setPrefWidth(140);
+        TableColumn surnameColumn = new TableColumn("Фамилия");
+        surnameColumn.setPrefWidth(140);
+        TableColumn nameColumn = new TableColumn("Имя");
+        nameColumn.setPrefWidth(140);
+
+        loginColumn.setCellValueFactory(new PropertyValueFactory<>("login"));
+        surnameColumn.setCellValueFactory(new PropertyValueFactory<>("surname"));
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        loginColumn.setStyle("-fx-alignment: CENTER; -fx-font-size: 14");
+        surnameColumn.setStyle("-fx-alignment: CENTER; -fx-font-size: 14");
+        nameColumn.setStyle("-fx-alignment: CENTER; -fx-font-size: 14");
+
+        table.getColumns().addAll(loginColumn, surnameColumn, nameColumn);
+        table.setItems(FXCollections.observableArrayList(participants));
     }
 }
