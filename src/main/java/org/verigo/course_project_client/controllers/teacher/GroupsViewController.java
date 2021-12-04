@@ -7,7 +7,9 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.github.cdimascio.dotenv.Dotenv;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -18,14 +20,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.verigo.course_project_client.models.Course;
-import org.verigo.course_project_client.models.CourseGroup;
-import org.verigo.course_project_client.models.User;
+import org.verigo.course_project_client.models.*;
 import org.verigo.course_project_client.store.DotenvProvider;
 import org.verigo.course_project_client.store.UserProvider;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ public class GroupsViewController {
     private List<Integer> groupsIds = new ArrayList<>();
     private List<CourseGroup> groups = new ArrayList<>();
     private ObservableList<CourseGroup> observableGroups;
+    private ObservableList<User> observableParticipants;
 
     @FXML
     private AnchorPane groupsTableContainer;
@@ -49,6 +51,9 @@ public class GroupsViewController {
 
     @FXML
     private AnchorPane participantsTableContainer;
+
+    @FXML
+    private AnchorPane scoresTableContainer;
 
 
     @FXML
@@ -97,7 +102,6 @@ public class GroupsViewController {
         groupInfoColumn.setMaxWidth(150);
         groupInfoColumn.setPrefWidth(150);
         groupInfoColumn.setSortable(false);
-        groupInfoColumn.setStyle("-fx-alignment: CENTER");
         groupInfoColumn.setCellFactory((Callback<TableColumn<CourseGroup, Boolean>, TableCell<CourseGroup, Boolean>>) p -> new ButtonCell());
 
         groupsTable.getColumns().addAll(groupInfoColumn);
@@ -127,11 +131,23 @@ public class GroupsViewController {
                 participantsTableContainer.getChildren().add(groupName);
                 groupName.setText(group.getName());
 
-                TableView participantsTable = new TableView();
+                TableView<User> participantsTable = new TableView<>();
                 Set<User> participants = group.getParticipants();
+
+                Set<Task> availableTasks = new HashSet<>();
+                group.getCourse().getLessons().forEach(lesson -> lesson.getTasks().forEach(task -> availableTasks.add((task))));
+                List<Integer> availableTaskIds = new ArrayList<>();
+                availableTasks.forEach(task -> availableTaskIds.add(task.getId()));
+
                 participants.removeIf(participant -> participant.getId() == loggedUser.getId());
-                initParticipantsTable(participantsTable, participants);
+                observableParticipants = FXCollections.observableArrayList(participants);
+
+                initParticipantsTable(participantsTable, observableParticipants);
                 participantsTableContainer.getChildren().add(participantsTable);
+
+                participantsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+                    initScoresTable(newValue, availableTaskIds);
+                });
             });
 
             emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
@@ -152,7 +168,7 @@ public class GroupsViewController {
         }
     }
 
-    private void initParticipantsTable(TableView table, Set<User> participants) {
+    private void initParticipantsTable(TableView table,  ObservableList<User> participants) {
         table.setLayoutX(14);
         table.setLayoutY(54);
         table.setPrefHeight(300);
@@ -174,5 +190,45 @@ public class GroupsViewController {
 
         table.getColumns().addAll(loginColumn, surnameColumn, nameColumn);
         table.setItems(FXCollections.observableArrayList(participants));
+    }
+
+    private void initScoresTable(User user, List<Integer> availableIds) {
+        TableView<User> scoresTable = new TableView<>();
+        scoresTable.setLayoutX(14);
+        scoresTable.setLayoutY(14);
+        scoresTable.setPrefWidth(950);
+        scoresTable.setPrefHeight(80);
+
+        TableColumn<User, String> userNameColumn = new TableColumn<>("Студент");
+        userNameColumn.setStyle("-fx-alignment: CENTER; -fx-font-size: 14");
+        userNameColumn.setSortable(false);
+        userNameColumn.setCellValueFactory(data -> {
+            String userName = data.getValue().getSurname() + " " + data.getValue().getName();
+            return new SimpleStringProperty(userName);
+        });
+
+        scoresTable.getColumns().add(userNameColumn);
+
+        user.getTasksResults().forEach(result -> {
+            if(availableIds.contains(result.getTask().getId())) {
+                TableColumn<User, String> column = new TableColumn<>(result.getTask().getTitle());
+                column.setPrefWidth(120);
+                column.setStyle("-fx-alignment: CENTER; -fx-font-size: 14");
+                column.setSortable(false);
+
+                column.setCellValueFactory(data -> {
+                    boolean isCompleted = result.isCompleted();
+
+                    if (!isCompleted) return new SimpleStringProperty("");
+                    return new SimpleStringProperty(String.valueOf(result.getPoints()));
+                });
+
+                scoresTable.getColumns().add(column);
+            }
+        });
+
+        scoresTable.setItems(FXCollections.observableArrayList(user));
+
+        scoresTableContainer.getChildren().add(scoresTable);
     }
 }

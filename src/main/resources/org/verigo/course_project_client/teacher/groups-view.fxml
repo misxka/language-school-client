@@ -5,7 +5,7 @@
 
 <AnchorPane prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.verigo.course_project_client.controllers.teacher.GroupsViewController">
    <children>
-      <AnchorPane fx:id="groupsTableContainer" prefHeight="650.0" prefWidth="500.0">
+      <AnchorPane fx:id="groupsTableContainer" prefHeight="450.0" prefWidth="500.0">
          <children>
             <TableView fx:id="groupsTable" layoutX="14.0" layoutY="14.0" prefHeight="340.0" prefWidth="319.0">
               <columns>
@@ -15,5 +15,6 @@
          </children>
       </AnchorPane>
       <AnchorPane fx:id="participantsTableContainer" layoutX="420.0" prefHeight="650.0" prefWidth="580.0" />
+      <AnchorPane fx:id="scoresTableContainer" layoutY="450" prefHeight="200.0" prefWidth="1000.0" />
    </children>
 </AnchorPane>
