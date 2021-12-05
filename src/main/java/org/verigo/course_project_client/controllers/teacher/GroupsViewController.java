@@ -35,7 +35,6 @@ import org.verigo.course_project_client.models.*;
 import org.verigo.course_project_client.store.DotenvProvider;
 import org.verigo.course_project_client.store.UserProvider;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Type;
 import java.util.*;

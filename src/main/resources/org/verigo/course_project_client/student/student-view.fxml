@@ -3,27 +3,29 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<?import org.kordamp.ikonli.javafx.*?>
 
 <AnchorPane prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.verigo.course_project_client.controllers.student.StudentViewController">
    <children>
-      <GridPane layoutX="200.0" layoutY="140.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="200.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="200.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="200.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" prefHeight="190.0" prefWidth="190.0" style="-fx-background-color: #46aae8;" textAlignment="CENTER" textFill="WHITE" wrapText="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Button>
-         </children>
-      </GridPane>
+       <TableView fx:id="coursesTable" layoutX="14.0" layoutY="40.0" prefHeight="298.0" prefWidth="663.0">
+           <columns>
+               <TableColumn fx:id="titleColumn" prefWidth="175.00000381469727" text="Название" />
+               <TableColumn fx:id="languageColumn" minWidth="8.20001220703125" prefWidth="117.39999389648438" text="Язык" />
+               <TableColumn fx:id="levelColumn" minWidth="0.0" prefWidth="68.0" text="Уровень" />
+               <TableColumn fx:id="onlineColumn" prefWidth="53.199981689453125" text="Онлайн" />
+               <TableColumn fx:id="priceColumn" prefWidth="81.5999755859375" text="Цена" />
+           </columns>
+       </TableView>
+      <Label layoutX="14.0" layoutY="14.0" text="Запись на курс" textFill="#46aae8">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+      <ListView fx:id="myCoursesListView" layoutX="713.0" layoutY="40.0" prefHeight="200.0" prefWidth="247.0" />
+      <Label layoutX="713.0" layoutY="14.0" text="Мои курсы" textFill="#46aae8">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+      <AnchorPane fx:id="groupsContainer" layoutX="14.0" layoutY="351.0" prefHeight="285.0" prefWidth="364.0" />
    </children>
 </AnchorPane>
