@@ -3,19 +3,157 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import org.kordamp.ikonli.javafx.*?>
 
 <AnchorPane prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.verigo.course_project_client.controllers.teacher.WorkspaceViewController">
-    <children>
-        <Label layoutX="14.0" layoutY="14.0" prefHeight="41.0" prefWidth="266.0" text="Разработка" textFill="#46aae8">
-            <font>
-                <Font name="System Bold" size="20.0" />
-            </font>
-        </Label>
-        <TableView layoutX="14.0" layoutY="56.0" prefHeight="200.0" prefWidth="200.0">
-            <columns>
-                <TableColumn prefWidth="75.0" text="C1" />
-                <TableColumn prefWidth="75.0" text="C2" />
-            </columns>
-        </TableView>
-    </children>
+   <children>
+      <ScrollPane prefHeight="650.0" prefWidth="1000.0" vmax="1200">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1300.0" prefWidth="1000.0">
+              <children>
+                  <AnchorPane fx:id="coursesContainer" minHeight="0.0" minWidth="0.0" prefHeight="400.0" prefWidth="1000.0">
+                      <Label fx:id="coursesLabel" layoutX="14.0" layoutY="14.0" prefHeight="41.0" prefWidth="266.0" text="Курсы" textFill="#46aae8">
+                          <font>
+                              <Font name="System Bold" size="20.0" />
+                          </font>
+                      </Label>
+                      <TableView fx:id="coursesTable" layoutX="14.0" layoutY="56.0" prefHeight="270.0" prefWidth="551.0">
+                          <columns>
+                              <TableColumn fx:id="coursesTitleColumn" prefWidth="200.0" text="Название" />
+                              <TableColumn fx:id="coursesLanguageColumn" minWidth="0.0" prefWidth="125.0" text="Язык" />
+                              <TableColumn fx:id="coursesLevelColumn" minWidth="0.0" prefWidth="65.0" text="Уровень" />
+                              <TableColumn fx:id="coursesIsOnlineColumn" prefWidth="67.0" text="Онлайн" />
+                              <TableColumn fx:id="coursesPriceColumn" prefWidth="79.0" text="Цена" />
+                          </columns>
+                      </TableView>
+                      <Button fx:id="refreshCoursesTable" layoutX="585.0" layoutY="56.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #46aae8;" text="Обновить таблицу" textFill="WHITE">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                          <graphic>
+                              <FontIcon iconColor="white" iconLiteral="fas-sync-alt" iconSize="14" />
+                          </graphic>
+                      </Button>
+                      <Button fx:id="deleteCourseButton" disable="true" graphicTextGap="10" layoutX="758.0" layoutY="56.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #ff4f4f" text="Удалить курс">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                          <graphic>
+                              <FontIcon iconLiteral="fas-trash-alt" />
+                          </graphic>
+                      </Button>
+                      <Button fx:id="addCourseButton" layoutX="634.0" layoutY="335.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="117.0" style="-fx-cursor: hand; -fx-background-color: #46aae8;" text="Добавить" textAlignment="CENTER" textFill="WHITE">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                      </Button>
+                      <TextField fx:id="setCourseTitleField" layoutX="14.0" layoutY="335.0" promptText="Название">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                      </TextField>
+                      <TextField fx:id="setCourseLanguageField" layoutX="202.0" layoutY="335.0" prefHeight="30.0" prefWidth="118.0" promptText="Язык">
+                          <font>
+                              <Font size="14.0" />
+                          </font></TextField>
+                      <TextField fx:id="setCoursePriceColumn" layoutX="531.0" layoutY="335.0" prefHeight="30.0" prefWidth="90.0" promptText="Цена">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                      </TextField>
+                      <ChoiceBox fx:id="setCourseLevelBox" layoutX="333.0" layoutY="335.0" prefHeight="30.0" prefWidth="87.0" />
+                      <ChoiceBox fx:id="setCourseIsOnlineBox" layoutX="432.0" layoutY="335.0" prefHeight="30.0" prefWidth="87.0" />
+                  </AnchorPane>
+
+                  <AnchorPane fx:id="lessonsContainer" layoutY="400.0" minHeight="0.0" minWidth="0.0" prefHeight="400.0" prefWidth="1000.0">
+                      <Label fx:id="lessonsLabel" layoutX="14.0" layoutY="14.0" prefHeight="41.0" prefWidth="266.0" text="Уроки" textFill="#46aae8">
+                          <font>
+                              <Font name="System Bold" size="20.0" />
+                          </font>
+                      </Label>
+                      <TableView fx:id="lessonsTable" layoutX="14.0" layoutY="56.0" prefHeight="270.0" prefWidth="215.0">
+                          <columns>
+                              <TableColumn fx:id="lessonsTitleColumn" prefWidth="200.0" text="Название" />
+                          </columns>
+                      </TableView>
+                      <Button fx:id="refreshLessonsTable" layoutX="246.0" layoutY="56.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #46aae8;" text="Обновить таблицу" textFill="WHITE">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                          <graphic>
+                              <FontIcon iconColor="white" iconLiteral="fas-sync-alt" iconSize="14" />
+                          </graphic>
+                      </Button>
+                      <Button fx:id="deleteLessonButton" disable="true" graphicTextGap="10" layoutX="417.0" layoutY="56.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #ff4f4f" text="Удалить урок">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                          <graphic>
+                              <FontIcon iconLiteral="fas-trash-alt" />
+                          </graphic>
+                      </Button>
+                      <Button fx:id="addLessonButton" layoutX="202.0" layoutY="335.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="117.0" style="-fx-cursor: hand; -fx-background-color: #46aae8;" text="Добавить" textAlignment="CENTER" textFill="WHITE">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                      </Button>
+                      <TextField fx:id="setLessonTitleField" layoutX="14.0" layoutY="335.0" promptText="Название">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                      </TextField>
+                  </AnchorPane>
+
+                  <AnchorPane fx:id="tasksContainer" layoutY="800.0" minHeight="0.0" minWidth="0.0" prefHeight="400.0" prefWidth="1000.0">
+                      <Label fx:id="tasksLabel" layoutX="14.0" layoutY="14.0" prefHeight="41.0" prefWidth="266.0" text="Задания" textFill="#46aae8">
+                          <font>
+                              <Font name="System Bold" size="20.0" />
+                          </font>
+                      </Label>
+                      <TableView fx:id="tasksTable" layoutX="14.0" layoutY="56.0" prefHeight="270.0" prefWidth="800.0">
+                          <columns>
+                              <TableColumn fx:id="tasksTitleColumn" prefWidth="180.0" text="Название" />
+                              <TableColumn fx:id="tasksDescriptionColumn" prefWidth="400.0" text="Описание" />
+                              <TableColumn fx:id="tasksIsHometaskColumn" prefWidth="80.0" text="Домашнее" />
+                              <TableColumn fx:id="tasksMaxPointsColumn" prefWidth="120.0" text="Макс. оценка" />
+                          </columns>
+                      </TableView>
+                      <Button fx:id="refreshTasksTable" layoutX="820.0" layoutY="56.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #46aae8;" text="Обновить таблицу" textFill="WHITE">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                          <graphic>
+                              <FontIcon iconColor="white" iconLiteral="fas-sync-alt" iconSize="14" />
+                          </graphic>
+                      </Button>
+                      <Button fx:id="deleteTaskButton" disable="true" graphicTextGap="10" layoutX="820.0" layoutY="106.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #ff4f4f" text="Удалить курс">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                          <graphic>
+                              <FontIcon iconLiteral="fas-trash-alt" />
+                          </graphic>
+                      </Button>
+                      <Button fx:id="addTaskButton" layoutX="634.0" layoutY="335.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="117.0" style="-fx-cursor: hand; -fx-background-color: #46aae8;" text="Добавить" textAlignment="CENTER" textFill="WHITE">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                      </Button>
+                      <TextField fx:id="setTaskTitleField" layoutX="14.0" layoutY="335.0" promptText="Название">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                      </TextField>
+                      <ChoiceBox fx:id="setTaskIsHometaskBox" layoutX="202.0" layoutY="335.0" prefHeight="30.0" prefWidth="87.0" />
+                      <TextArea fx:id="setTaskDescriptionArea" layoutX="300.0" layoutY="335.0" prefHeight="80.0" prefWidth="315.0" promptText="Описание задания" wrapText="true">
+                          <font>
+                              <Font size="14.0" />
+                          </font>
+                      </TextArea>
+                  </AnchorPane>
+              </children>
+          </AnchorPane>
+        </content>
+      </ScrollPane>
+   </children>
 </AnchorPane>
