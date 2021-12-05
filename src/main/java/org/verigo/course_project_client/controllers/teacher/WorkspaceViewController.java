@@ -107,6 +107,11 @@ public class WorkspaceViewController {
     private Button addCourseButton;
 
     @FXML
+    private TextField setLessonTitleField;
+    @FXML
+    private Button addLessonButton;
+
+    @FXML
     private ChoiceBox<String> setTaskIsHometaskBox;
     @FXML
     private Button addTaskButton;
@@ -294,6 +299,21 @@ public class WorkspaceViewController {
         });
     }
 
+    private void initAddLessonComponent() {
+        addLessonButton.setOnAction(event -> {
+            Lesson lesson = new Lesson();
+            lesson.setTitle(setLessonTitleField.getText());
+
+            Lesson result = createLesson(lesson);
+            if(result != null) {
+                lessons = getAllLessons();
+                observableLessons = FXCollections.observableArrayList(lessons);
+                initActions();
+                setLessonTitleField.clear();
+            }
+        });
+    }
+
     private void resetCourseFields() {
         setCourseTitleField.clear();
         setCourseLanguageField.clear();
@@ -430,6 +450,47 @@ public class WorkspaceViewController {
             Course createdCourse = new Gson().fromJson(apiResponse.getBody().toString(), Course.class);
 
             return createdCourse;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Lesson createLesson(Lesson lesson) {
+        try {
+            Unirest.setObjectMapper(new ObjectMapper() {
+                com.fasterxml.jackson.databind.ObjectMapper mapper
+                        = new com.fasterxml.jackson.databind.ObjectMapper();
+
+                public String writeValue(Object value) {
+                    try {
+                        return mapper.writeValueAsString(value);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        return String.valueOf(e);
+                    }
+                }
+
+                public <T> T readValue(String value, Class<T> valueType) {
+                    try {
+                        return mapper.readValue(value, valueType);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            });
+
+            HttpResponse<JsonNode> apiResponse = Unirest.post(dotenv.get("HOST") + "/lessons")
+                    .header("Content-Type", "application/json")
+                    .body(lesson)
+                    .asJson();
+
+            if(apiResponse.getStatus() == 400) return null;
+
+            Lesson createdLesson = new Gson().fromJson(apiResponse.getBody().toString(), Lesson.class);
+
+            return createdLesson;
         } catch (UnirestException e) {
             e.printStackTrace();
             return null;
