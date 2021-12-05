@@ -240,6 +240,7 @@ public class GroupsViewController {
                 column.setCellFactory(col -> new IntegerEditingCell(1, 10));
                 column.setOnEditCommit(event -> {
                     result.setPoints(Integer.parseInt(event.getNewValue()));
+                    result.setCompleted(true);
                 });
 
                 column.setCellValueFactory(data -> {
