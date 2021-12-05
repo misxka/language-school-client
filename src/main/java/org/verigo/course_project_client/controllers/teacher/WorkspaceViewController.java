@@ -1,9 +1,11 @@
 package org.verigo.course_project_client.controllers.teacher;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -16,6 +18,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.verigo.course_project_client.constraints.ROLE;
 import org.verigo.course_project_client.models.Course;
 import org.verigo.course_project_client.models.Lesson;
 import org.verigo.course_project_client.models.Task;
@@ -28,6 +31,9 @@ import java.util.List;
 
 public class WorkspaceViewController {
     Dotenv dotenv = DotenvProvider.getInstance().getDotenv();
+
+    private final String[] levels = { "A1", "A1+", "A2", "A2+", "B1", "B1+", "B2", "B2+", "C1", "C1+", "C2", "C2+" };
+    private final String[] courseFormats = { "Онлайн", "Офлайн" };
 
     private Course selectedCourse = null;
     private Lesson selectedLesson = null;
@@ -87,6 +93,24 @@ public class WorkspaceViewController {
     @FXML
     private Button switchLessonTaskButton;
 
+    @FXML
+    private ChoiceBox<String> setCourseLevelBox;
+    @FXML
+    private TextField setCourseTitleField;
+    @FXML
+    private TextField setCourseLanguageField;
+    @FXML
+    private Spinner<Double> setCoursePriceField;
+    @FXML
+    private ChoiceBox<String> setCourseIsOnlineBox;
+    @FXML
+    private Button addCourseButton;
+
+    @FXML
+    private ChoiceBox<String> setTaskIsHometaskBox;
+    @FXML
+    private Button addTaskButton;
+
 
     @FXML
     public void initialize() {
@@ -104,6 +128,8 @@ public class WorkspaceViewController {
         initSwitchButtons();
 
         initActions();
+
+        initAddCourseComponent();
     }
 
     private void initActions() {
@@ -242,6 +268,52 @@ public class WorkspaceViewController {
         alert.showAndWait();
     }
 
+    private void initAddCourseComponent() {
+        setCourseLevelBox.setItems(FXCollections.observableArrayList(levels));
+        setCourseIsOnlineBox.setItems(FXCollections.observableArrayList(courseFormats));
+
+        addCourseButton.setOnAction(event -> {
+            if(isCourseValid()) {
+                Course course = new Course();
+                course.setTitle(setCourseTitleField.getText());
+                course.setLanguage(setCourseLanguageField.getText());
+                course.setLevel(setCourseLevelBox.getValue());
+                if(setCourseIsOnlineBox.getValue().equals("Онлайн"))
+                    course.setIsOnline(true);
+                else course.setIsOnline(false);
+                course.setPrice(new BigDecimal(setCoursePriceField.getEditor().getText().replaceAll(",", ".")));
+
+                Course result = createCourse(course);
+                if(result != null) {
+                    courses = getAllCourses();
+                    observableCourses = FXCollections.observableArrayList(courses);
+                    initActions();
+                    resetCourseFields();
+                }
+            }
+        });
+    }
+
+    private void resetCourseFields() {
+        setCourseTitleField.clear();
+        setCourseLanguageField.clear();
+        setCoursePriceField.getEditor().setText("50");
+    }
+
+    private boolean isCourseValid() {
+        if(setCourseTitleField.getText() == null || setCourseTitleField.getText().equals("")) return false;
+        if(setCourseLanguageField.getText() == null || setCourseLanguageField.getText().equals("")) return false;
+        if(setCourseLevelBox.getValue() == null || setCourseLevelBox.getValue().equals("")) return false;
+        if(setCourseIsOnlineBox.getValue() == null || setCourseIsOnlineBox.getValue().equals("")) return false;
+        if(setCoursePriceField.getEditor().getText() == null || setCoursePriceField.getEditor().getText().equals("")) return false;
+        try {
+            Double.parseDouble(setCoursePriceField.getEditor().getText().replaceAll(",", "."));
+        } catch(NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
     //API calls
     private List<Course> getAllCourses() {
         try {
@@ -321,5 +393,46 @@ public class WorkspaceViewController {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private Course createCourse(Course course) {
+        try {
+            Unirest.setObjectMapper(new ObjectMapper() {
+                com.fasterxml.jackson.databind.ObjectMapper mapper
+                        = new com.fasterxml.jackson.databind.ObjectMapper();
+
+                public String writeValue(Object value) {
+                    try {
+                        return mapper.writeValueAsString(value);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        return String.valueOf(e);
+                    }
+                }
+
+                public <T> T readValue(String value, Class<T> valueType) {
+                    try {
+                        return mapper.readValue(value, valueType);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            });
+
+            HttpResponse<JsonNode> apiResponse = Unirest.post(dotenv.get("HOST") + "/courses")
+                    .header("Content-Type", "application/json")
+                    .body(course)
+                    .asJson();
+
+            if(apiResponse.getStatus() == 400) return null;
+
+            Course createdCourse = new Gson().fromJson(apiResponse.getBody().toString(), Course.class);
+
+            return createdCourse;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
