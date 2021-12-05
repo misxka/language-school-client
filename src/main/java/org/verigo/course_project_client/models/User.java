@@ -1,8 +1,6 @@
 package org.verigo.course_project_client.models;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class User {
     private Integer id;
@@ -13,15 +11,15 @@ public class User {
     private Date updatedAt;
     private Role role;
     private String password;
-    private Set<CourseGroup> groups = new HashSet<>();
-    private Set<UserTaskResult> tasksResults;
+    private List<CourseGroup> groups = new ArrayList<>();
+    private List<UserTaskResult> tasksResults = new ArrayList<>();
 
 
     public User() {
 
     }
 
-    public User(Integer id, String login, String surname, String name, Date createdAt, Date updatedAt, Role role, Set<CourseGroup> groups, Set<UserTaskResult> tasksResults) {
+    public User(Integer id, String login, String surname, String name, Date createdAt, Date updatedAt, Role role, List<CourseGroup> groups, List<UserTaskResult> tasksResults) {
         this.id = id;
         this.login = login;
         this.name = name;
@@ -34,7 +32,7 @@ public class User {
         this.tasksResults = tasksResults;
     }
 
-    public User(Integer id, String login, String surname, String name, Date createdAt, Date updatedAt, Role role, String password, Set<CourseGroup> groups, Set<UserTaskResult> tasksResults) {
+    public User(Integer id, String login, String surname, String name, Date createdAt, Date updatedAt, Role role, String password, List<CourseGroup> groups, List<UserTaskResult> tasksResults) {
         this.id = id;
         this.login = login;
         this.name = name;
@@ -92,19 +90,19 @@ public class User {
     }
 
 
-    public Set<CourseGroup> getGroups() {
+    public List<CourseGroup> getGroups() {
         return groups;
     }
 
-    public void setGroups(Set<CourseGroup> groups) {
+    public void setGroups(List<CourseGroup> groups) {
         this.groups = groups;
     }
 
-    public Set<UserTaskResult> getTasksResults() {
+    public List<UserTaskResult> getTasksResults() {
         return tasksResults;
     }
 
-    public void setTasksResults(Set<UserTaskResult> tasksResults) {
+    public void setTasksResults(List<UserTaskResult> tasksResults) {
         this.tasksResults = tasksResults;
     }
 }

@@ -8,38 +8,38 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.http.options.Option;
-import com.mashape.unirest.http.options.Options;
 import io.github.cdimascio.dotenv.Dotenv;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.verigo.course_project_client.models.*;
 import org.verigo.course_project_client.store.DotenvProvider;
 import org.verigo.course_project_client.store.UserProvider;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.UnaryOperator;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class GroupsViewController {
@@ -139,16 +139,20 @@ public class GroupsViewController {
                 groupName.setLayoutY(14);
                 groupName.setStyle("-fx-font-size: 20; -fx-text-fill: #46aae8");
 
-                participantsTableContainer.getChildren().add(groupName);
-                groupName.setText(group.getName());
-
                 TableView<User> participantsTable = new TableView<>();
-                Set<User> participants = group.getParticipants();
+                List<User> participants = group.getParticipants();
 
                 Set<Task> availableTasks = new HashSet<>();
                 group.getCourse().getLessons().forEach(lesson -> lesson.getTasks().forEach(task -> availableTasks.add((task))));
                 List<Integer> availableTaskIds = new ArrayList<>();
                 availableTasks.forEach(task -> availableTaskIds.add(task.getId()));
+
+                Button exportBtn = initExportBtn(group, availableTaskIds);
+                exportBtn.setLayoutY(14);
+                exportBtn.setLayoutX(305);
+
+                participantsTableContainer.getChildren().addAll(groupName, exportBtn);
+                groupName.setText(group.getName());
 
                 participants.removeIf(participant -> participant.getId() == loggedUser.getId());
                 observableParticipants = FXCollections.observableArrayList(participants);
@@ -205,7 +209,7 @@ public class GroupsViewController {
 
     private void initScoresTable(User user, List<Integer> availableIds) {
         Button updateRecordsBtn = new Button("Сохранить изменения");
-        updateRecordsBtn.setStyle("-fx-font-size: 14; -fx-background-color: #46aae8; -fx-text-fill: white");
+        updateRecordsBtn.setStyle("-fx-font-size: 14; -fx-background-color: #46aae8; -fx-text-fill: white; -fx-cursor: hand");
         updateRecordsBtn.setLayoutY(110);
         updateRecordsBtn.setLayoutX(802);
 
@@ -357,6 +361,99 @@ public class GroupsViewController {
 
     }
 
+    private Button initExportBtn(CourseGroup group, List<Integer> availableTaskIds) {
+        Button exportBtn = new Button("Создать Excel-файл");
+        FontIcon icon = new FontIcon("fas-file-excel");
+        icon.setIconColor(Color.WHITE);
+        exportBtn.setGraphic(icon);
+        exportBtn.setStyle("-fx-font-size: 14; -fx-background-color: #46aae8; -fx-text-fill: white; -fx-cursor: hand");
+
+        exportBtn.setOnAction(event -> {
+            exportData(group, availableTaskIds);
+        });
+
+        return exportBtn;
+    }
+
+    private void exportData(CourseGroup group, List<Integer> availableIds) {
+        List<User> participants = group.getParticipants();
+        List<UserTaskResult> tasksResults = participants.get(0).getTasksResults();
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("Результаты - Группа " + group.getName());
+        Map<Integer, List<String>> rows = new TreeMap<>();
+
+        List<String> titles = new ArrayList<>();
+        titles.add("Студент");
+        tasksResults.forEach(result -> {
+            if(availableIds.contains(result.getTask().getId())) {
+                titles.add(result.getTask().getTitle());
+            }
+        });
+        final int[] rowKeys = {1};
+        rows.put(rowKeys[0]++, titles);
+
+        participants.forEach(participant -> {
+            List<String> results = new ArrayList<>();
+            results.add(participant.getSurname() + " " + participant.getName());
+            participant.getTasksResults().forEach(result -> {
+                if(availableIds.contains(result.getTask().getId())) {
+                    results.add(result.getPoints() == 0 ? "" : String.valueOf(result.getPoints()));
+                }
+            });
+            rows.put(rowKeys[0]++, results);
+        });
+
+        Row titlesRow = sheet.createRow(0);
+        XSSFFont font= workbook.createFont();
+        font.setBold(true);
+        CellStyle headerStyle = createStyle(workbook);
+        headerStyle.setFont(font);
+
+        CellStyle bodyStyle = createStyle(workbook);
+
+        int cellnum = 0;
+        for (int i = 0; i < titles.size(); i++)
+        {
+            sheet.autoSizeColumn(i);
+            sheet.setColumnWidth(i,sheet.getColumnWidth(i) * 30/10);
+            org.apache.poi.ss.usermodel.Cell cell = titlesRow.createCell(cellnum++);
+            cell.setCellValue(titles.get(i));
+            cell.setCellStyle(headerStyle);
+        }
+
+        int rownum = 1;
+        for (int key = 2; key <= rows.size(); key++)
+        {
+            Row row = sheet.createRow(rownum++);
+            List<String> results = rows.get(key);
+            int innerCellNum = 0;
+            for (String result : results)
+            {
+                org.apache.poi.ss.usermodel.Cell cell = row.createCell(innerCellNum++);
+                cell.setCellValue(result);
+                cell.setCellStyle(bodyStyle);
+            }
+        }
+
+        try {
+            FileOutputStream out = new FileOutputStream("Результаты - Группа " + group.getName() + ".xls");
+            workbook.write(out);
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private CellStyle createStyle(XSSFWorkbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        return style;
+    }
 
     //API calls
     private User updateUser(User user) {
@@ -400,3 +497,5 @@ public class GroupsViewController {
         }
     }
 }
+
+//TODO Close studentResults when new Group selected

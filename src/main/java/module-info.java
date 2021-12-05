@@ -16,6 +16,8 @@ module org.verigo.course_project_client {
     requires java.sql;
     requires java.dotenv;
     requires com.fasterxml.jackson.databind;
+    requires org.apache.poi.ooxml;
+    requires org.apache.commons.compress;
 
     opens org.verigo.course_project_client to javafx.fxml;
 

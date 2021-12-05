@@ -1,5 +1,6 @@
 package org.verigo.course_project_client.models;
 
+import java.util.List;
 import java.util.Set;
 
 public class Lesson {
@@ -7,7 +8,7 @@ public class Lesson {
 
     private String title;
 
-    private Set<Task> tasks;
+    private List<Task> tasks;
 
     private Course course;
 
@@ -20,7 +21,7 @@ public class Lesson {
         return title;
     }
 
-    public Set<Task> getTasks() {
+    public List<Task> getTasks() {
         return tasks;
     }
 
@@ -36,7 +37,7 @@ public class Lesson {
         this.title = title;
     }
 
-    public void setTasks(Set<Task> tasks) {
+    public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
 

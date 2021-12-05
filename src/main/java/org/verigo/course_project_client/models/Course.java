@@ -1,6 +1,7 @@
 package org.verigo.course_project_client.models;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 public class Course {
@@ -16,9 +17,9 @@ public class Course {
 
     private boolean isOnline;
 
-    private Set<Lesson> lessons;
+    private List<Lesson> lessons;
 
-    private Set<CourseGroup> groups;
+    private List<CourseGroup> groups;
 
 
     public Integer getId() {
@@ -37,11 +38,11 @@ public class Course {
         return isOnline;
     }
 
-    public Set<Lesson> getLessons() {
+    public List<Lesson> getLessons() {
         return lessons;
     }
 
-    public Set<CourseGroup> getGroups() {
+    public List<CourseGroup> getGroups() {
         return groups;
     }
 
@@ -70,11 +71,11 @@ public class Course {
         isOnline = online;
     }
 
-    public void setLessons(Set<Lesson> lessons) {
+    public void setLessons(List<Lesson> lessons) {
         this.lessons = lessons;
     }
 
-    public void setGroups(Set<CourseGroup> groups) {
+    public void setGroups(List<CourseGroup> groups) {
         this.groups = groups;
     }
 
