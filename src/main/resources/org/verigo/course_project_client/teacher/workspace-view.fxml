@@ -84,7 +84,7 @@
                               <FontIcon iconColor="white" iconLiteral="fas-sync-alt" iconSize="14" />
                           </graphic>
                       </Button>
-                      <Button fx:id="deleteLessonButton" disable="true" graphicTextGap="10" layoutX="417.0" layoutY="56.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #ff4f4f" text="Удалить урок">
+                      <Button fx:id="deleteLessonButton" disable="true" graphicTextGap="10" layoutX="246.0" layoutY="103.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #ff4f4f" text="Удалить урок">
                           <font>
                               <Font size="14.0" />
                           </font>
@@ -102,6 +102,46 @@
                               <Font size="14.0" />
                           </font>
                       </TextField>
+                     <AnchorPane layoutX="453.0" layoutY="80" prefHeight="271.0" prefWidth="520.0" style="-fx-border-color: #46aae8; -fx-border-width: 1px 1px 1px 1px; -fx-border-radius: 5px;">
+                        <children>
+                           <TextField fx:id="addToCourseField" editable="false" layoutX="14.0" layoutY="14.0" prefHeight="30.0" prefWidth="220.0" text="Выберите курс из таблицы...">
+                              <font>
+                                 <Font size="14.0" />
+                              </font>
+                           </TextField>
+                           <TextField fx:id="addLessonToCourseField" editable="false" layoutX="14.0" layoutY="54.0" prefHeight="26.0" prefWidth="220.0" text="Выберите урок из таблицы...">
+                              <font>
+                                 <Font size="14.0" />
+                              </font>
+                           </TextField>
+                           <TextField fx:id="addToLessonField" layoutX="14.0" layoutY="187.0" prefHeight="30.0" prefWidth="220.0" text="Выберите урок из таблицы...">
+                              <font>
+                                 <Font size="14.0" />
+                              </font>
+                           </TextField>
+                           <TextField fx:id="addTaskToLessonField" layoutX="14.0" layoutY="227.0" prefHeight="30.0" prefWidth="220.0" text="Выберите задание из таблицы...">
+                               <font>
+                                  <Font size="14.0" />
+                               </font>
+                           </TextField>
+                            <Button fx:id="switchCourseLessonButton" disable="true" graphicTextGap="10" layoutX="250.0" layoutY="34.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #46aae8" text="Добавить урок к курсу">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-exchange-alt" />
+                                </graphic>
+                            </Button>
+                            <Button fx:id="switchLessonTaskButton" disable="true" graphicTextGap="10" layoutX="250.0" layoutY="207.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #46aae8" text="Добавить задание к уроку">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-exchange-alt" />
+                                </graphic>
+                            </Button>
+                        </children>
+                     </AnchorPane>
                   </AnchorPane>
 
                   <AnchorPane fx:id="tasksContainer" layoutY="800.0" minHeight="0.0" minWidth="0.0" prefHeight="400.0" prefWidth="1000.0">
