@@ -22,6 +22,7 @@ import org.verigo.course_project_client.constraints.ROLE;
 import org.verigo.course_project_client.models.Course;
 import org.verigo.course_project_client.models.Lesson;
 import org.verigo.course_project_client.models.Task;
+import org.verigo.course_project_client.models.UserAdapter;
 import org.verigo.course_project_client.store.DotenvProvider;
 
 import java.lang.reflect.Type;
@@ -121,6 +122,13 @@ public class WorkspaceViewController {
     @FXML
     private Button addTaskButton;
 
+    @FXML
+    private Button deleteCourseButton;
+    @FXML
+    private Button deleteLessonButton;
+    @FXML
+    private Button deleteTaskButton;
+
 
     @FXML
     public void initialize() {
@@ -142,6 +150,7 @@ public class WorkspaceViewController {
         initAddCourseComponent();
         initAddLessonComponent();
         initAddTaskComponent();
+        initDeleteButtons();
     }
 
     private void initActions() {
@@ -178,6 +187,10 @@ public class WorkspaceViewController {
                 addToCourseField.setText(newSelection.getTitle());
 
                 if(selectedCourse != null && selectedLesson != null) switchCourseLessonButton.setDisable(false);
+
+                deleteCourseButton.setDisable(false);
+            } else {
+                deleteCourseButton.setDisable(true);
             }
         });
     }
@@ -193,6 +206,10 @@ public class WorkspaceViewController {
 
                 if(selectedCourse != null && selectedLesson != null) switchCourseLessonButton.setDisable(false);
                 if(selectedTask != null && selectedLesson != null) switchLessonTaskButton.setDisable(false);
+
+                deleteLessonButton.setDisable(false);
+            } else {
+                deleteLessonButton.setDisable(true);
             }
         });
     }
@@ -223,6 +240,10 @@ public class WorkspaceViewController {
                 addTaskToLessonField.setText(newSelection.getTitle());
 
                 if(selectedTask != null && selectedLesson != null) switchLessonTaskButton.setDisable(false);
+
+                deleteTaskButton.setDisable(false);
+            } else {
+                deleteTaskButton.setDisable(true);
             }
         });
     }
@@ -259,6 +280,7 @@ public class WorkspaceViewController {
             } else {
                 createAlert(Alert.AlertType.INFORMATION, "Успешно", "Урок успешно добавлен в курс!");
             }
+            clearSwitchData();
         });
 
         switchLessonTaskButton.setOnAction(event -> {
@@ -268,7 +290,22 @@ public class WorkspaceViewController {
             } else {
                 createAlert(Alert.AlertType.INFORMATION, "Успешно", "Задание успешно добавлено к уроку!");
             }
+            clearSwitchData();
         });
+    }
+
+    private void clearSwitchData() {
+        addToLessonField.clear();
+        addToCourseField.clear();
+        addLessonToCourseField.clear();
+        addTaskToLessonField.clear();
+
+        selectedCourse = null;
+        selectedLesson = null;
+        selectedTask = null;
+
+        switchLessonTaskButton.setDisable(true);
+        switchCourseLessonButton.setDisable(true);
     }
 
     private void createAlert(Alert.AlertType type, String title, String contextText) {
@@ -382,6 +419,47 @@ public class WorkspaceViewController {
         if(setTaskDescriptionArea.getText() == null || setTaskDescriptionArea.getText().equals("")) return false;
         if(setTaskIsHometaskBox.getValue() == null || setTaskIsHometaskBox.getValue().equals("")) return false;
         return true;
+    }
+
+    private void initDeleteButtons() {
+        deleteCourseButton.setOnAction(event -> {
+            Course course = coursesTable.getSelectionModel().getSelectedItem();
+            int id = course.getId();
+
+            Course result = deleteCourse(id);
+            if(result != null) {
+                courses = getAllCourses();
+                observableCourses = FXCollections.observableArrayList(courses);
+                initActions();
+                clearSwitchData();
+            }
+        });
+
+        deleteLessonButton.setOnAction(event -> {
+            Lesson lesson = lessonsTable.getSelectionModel().getSelectedItem();
+            int id = lesson.getId();
+
+            Lesson result = deleteLesson(id);
+            if(result != null) {
+                lessons = getAllLessons();
+                observableLessons = FXCollections.observableArrayList(lessons);
+                initActions();
+                clearSwitchData();
+            }
+        });
+
+        deleteTaskButton.setOnAction(event -> {
+            Task task = tasksTable.getSelectionModel().getSelectedItem();
+            int id = task.getId();
+
+            Task result = deleteTask(id);
+            if(result != null) {
+                tasks = getAllTasks();
+                observableTasks = FXCollections.observableArrayList(tasks);
+                initActions();
+                clearSwitchData();
+            }
+        });
     }
 
     //API calls
@@ -582,6 +660,51 @@ public class WorkspaceViewController {
             Task createdTask = new Gson().fromJson(apiResponse.getBody().toString(), Task.class);
 
             return createdTask;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Course deleteCourse(int id) {
+        try {
+            HttpResponse<JsonNode> apiResponse = Unirest.delete(dotenv.get("HOST") + "/courses/" + id)
+                    .header("Content-Type", "application/json")
+                    .asJson();
+
+            Course deletedCourse = new Gson().fromJson(apiResponse.getBody().toString(), Course.class);
+
+            return deletedCourse;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Lesson deleteLesson(int id) {
+        try {
+            HttpResponse<JsonNode> apiResponse = Unirest.delete(dotenv.get("HOST") + "/lessons/" + id)
+                    .header("Content-Type", "application/json")
+                    .asJson();
+
+            Lesson deletedLesson = new Gson().fromJson(apiResponse.getBody().toString(), Lesson.class);
+
+            return deletedLesson;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Task deleteTask(int id) {
+        try {
+            HttpResponse<JsonNode> apiResponse = Unirest.delete(dotenv.get("HOST") + "/tasks/" + id)
+                    .header("Content-Type", "application/json")
+                    .asJson();
+
+            Task deletedTask = new Gson().fromJson(apiResponse.getBody().toString(), Task.class);
+
+            return deletedTask;
         } catch (UnirestException e) {
             e.printStackTrace();
             return null;
