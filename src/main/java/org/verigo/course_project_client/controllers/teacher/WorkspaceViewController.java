@@ -12,8 +12,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -29,6 +31,10 @@ import java.util.List;
 
 public class WorkspaceViewController {
     Dotenv dotenv = DotenvProvider.getInstance().getDotenv();
+
+    private Course selectedCourse = null;
+    private Lesson selectedLesson = null;
+    private Task selectedTask = null;
 
 
     private List<Course> courses = new ArrayList<>();
@@ -71,6 +77,19 @@ public class WorkspaceViewController {
     @FXML
     private TableColumn<Task, Integer> tasksMaxPointsColumn;
 
+    @FXML
+    private TextField addToCourseField;
+    @FXML
+    private TextField addToLessonField;
+    @FXML
+    private TextField addLessonToCourseField;
+    @FXML
+    private TextField addTaskToLessonField;
+    @FXML
+    private Button switchCourseLessonButton;
+    @FXML
+    private Button switchLessonTaskButton;
+
 
     @FXML
     public void initialize() {
@@ -84,6 +103,8 @@ public class WorkspaceViewController {
         initCoursesTable();
         initLessonsTable();
         initTasksTable();
+
+        initSwitchButtons();
 
         initActions();
     }
@@ -115,10 +136,30 @@ public class WorkspaceViewController {
         coursesIsOnlineColumn.setStyle("-fx-alignment: CENTER");
         coursesPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
         coursesPriceColumn.setStyle("-fx-alignment: CENTER");
+
+        coursesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                this.selectedCourse = newSelection;
+                addToCourseField.setText(newSelection.getTitle());
+
+                if(selectedCourse != null && selectedLesson != null) switchCourseLessonButton.setDisable(false);
+            }
+        });
     }
 
     private void initLessonsTable() {
         lessonsTitleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+        lessonsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                this.selectedLesson = newSelection;
+                addToLessonField.setText(newSelection.getTitle());
+                addLessonToCourseField.setText(newSelection.getTitle());
+
+                if(selectedCourse != null && selectedLesson != null) switchCourseLessonButton.setDisable(false);
+                if(selectedTask != null && selectedLesson != null) switchLessonTaskButton.setDisable(false);
+            }
+        });
     }
 
     private void initTasksTable() {
@@ -140,6 +181,15 @@ public class WorkspaceViewController {
         tasksIsHometaskColumn.setStyle("-fx-alignment: CENTER");
         tasksMaxPointsColumn.setCellValueFactory(new PropertyValueFactory<>("maxPoints"));
         tasksMaxPointsColumn.setStyle("-fx-alignment: CENTER");
+
+        tasksTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                this.selectedTask = newSelection;
+                addTaskToLessonField.setText(newSelection.getTitle());
+
+                if(selectedTask != null && selectedLesson != null) switchLessonTaskButton.setDisable(false);
+            }
+        });
     }
 
     @FXML
@@ -164,6 +214,26 @@ public class WorkspaceViewController {
         observableTasks = FXCollections.observableArrayList(tasks);
 
         initActions();
+    }
+
+    private void initSwitchButtons() {
+        switchCourseLessonButton.setOnAction(event -> {
+            Lesson result = addLessonToCourse(selectedLesson.getId(), selectedCourse.getId());
+            if(result == null) {
+                //TODO Add modal windows
+            } else {
+
+            }
+        });
+
+        switchLessonTaskButton.setOnAction(event -> {
+            Task result = addTaskToLesson(selectedTask.getId(), selectedLesson.getId());
+            if(result == null) {
+
+            } else {
+
+            }
+        });
     }
 
 
@@ -208,6 +278,38 @@ public class WorkspaceViewController {
 
             Type listType = new TypeToken<ArrayList<Task>>(){}.getType();
             ArrayList<Task> res = new Gson().fromJson(apiResponse.getBody().toString(), listType);
+
+            return res;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Lesson addLessonToCourse(int lessonId, int courseId) {
+        try {
+            HttpResponse<JsonNode> apiResponse = Unirest.put(dotenv.get("HOST") + "/lessons/" + lessonId + "/course/" + courseId)
+                    .header("Content-Type", "application/json")
+                    .asJson();
+
+            Type lessonType = new TypeToken<Lesson>(){}.getType();
+            Lesson res = new Gson().fromJson(apiResponse.getBody().toString(), lessonType);
+
+            return res;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Task addTaskToLesson(int taskId, int lessonId) {
+        try {
+            HttpResponse<JsonNode> apiResponse = Unirest.put(dotenv.get("HOST") + "/tasks/" + taskId + "/lesson/" + lessonId)
+                    .header("Content-Type", "application/json")
+                    .asJson();
+
+            Type taskType = new TypeToken<Task>(){}.getType();
+            Task res = new Gson().fromJson(apiResponse.getBody().toString(), taskType);
 
             return res;
         } catch (UnirestException e) {
