@@ -135,6 +135,7 @@ public class WorkspaceViewController {
         initActions();
 
         initAddCourseComponent();
+        initAddLessonComponent();
     }
 
     private void initActions() {
