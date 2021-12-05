@@ -34,6 +34,7 @@ public class WorkspaceViewController {
 
     private final String[] levels = { "A1", "A1+", "A2", "A2+", "B1", "B1+", "B2", "B2+", "C1", "C1+", "C2", "C2+" };
     private final String[] courseFormats = { "Онлайн", "Офлайн" };
+    private final String[] hometaskFormats = { "Да", "Нет" };
 
     private Course selectedCourse = null;
     private Lesson selectedLesson = null;
@@ -114,6 +115,10 @@ public class WorkspaceViewController {
     @FXML
     private ChoiceBox<String> setTaskIsHometaskBox;
     @FXML
+    private TextField setTaskTitleField;
+    @FXML
+    private TextArea setTaskDescriptionArea;
+    @FXML
     private Button addTaskButton;
 
 
@@ -136,6 +141,7 @@ public class WorkspaceViewController {
 
         initAddCourseComponent();
         initAddLessonComponent();
+        initAddTaskComponent();
     }
 
     private void initActions() {
@@ -302,15 +308,41 @@ public class WorkspaceViewController {
 
     private void initAddLessonComponent() {
         addLessonButton.setOnAction(event -> {
-            Lesson lesson = new Lesson();
-            lesson.setTitle(setLessonTitleField.getText());
+            if(isLessonValid()) {
+                Lesson lesson = new Lesson();
+                lesson.setTitle(setLessonTitleField.getText());
 
-            Lesson result = createLesson(lesson);
-            if(result != null) {
-                lessons = getAllLessons();
-                observableLessons = FXCollections.observableArrayList(lessons);
-                initActions();
-                setLessonTitleField.clear();
+                Lesson result = createLesson(lesson);
+                if (result != null) {
+                    lessons = getAllLessons();
+                    observableLessons = FXCollections.observableArrayList(lessons);
+                    initActions();
+                    setLessonTitleField.clear();
+                }
+            }
+        });
+    }
+
+    private void initAddTaskComponent() {
+        setTaskIsHometaskBox.setItems(FXCollections.observableArrayList(hometaskFormats));
+
+        addTaskButton.setOnAction(event -> {
+            if(isTaskValid()) {
+                Task task = new Task();
+                task.setTitle(setCourseTitleField.getText());
+                task.setDescription(setTaskDescriptionArea.getText());
+                if(setTaskIsHometaskBox.getValue().equals("Да"))
+                    task.setIsHometask(true);
+                else task.setIsHometask(false);
+                task.setMaxPoints(10);
+
+                Task result = createTask(task);
+                if(result != null) {
+                    tasks = getAllTasks();
+                    observableTasks = FXCollections.observableArrayList(tasks);
+                    initActions();
+                    resetTaskFields();
+                }
             }
         });
     }
@@ -319,6 +351,11 @@ public class WorkspaceViewController {
         setCourseTitleField.clear();
         setCourseLanguageField.clear();
         setCoursePriceField.getEditor().setText("50");
+    }
+
+    private void resetTaskFields() {
+        setTaskTitleField.clear();
+        setTaskDescriptionArea.clear();
     }
 
     private boolean isCourseValid() {
@@ -332,6 +369,18 @@ public class WorkspaceViewController {
         } catch(NumberFormatException e) {
             return false;
         }
+        return true;
+    }
+
+    private boolean isLessonValid() {
+        if(setLessonTitleField.getText() == null || setLessonTitleField.getText().equals("")) return false;
+        return true;
+    }
+
+    private boolean isTaskValid() {
+        if(setTaskTitleField.getText() == null || setTaskTitleField.getText().equals("")) return false;
+        if(setTaskDescriptionArea.getText() == null || setTaskDescriptionArea.getText().equals("")) return false;
+        if(setTaskIsHometaskBox.getValue() == null || setTaskIsHometaskBox.getValue().equals("")) return false;
         return true;
     }
 
@@ -492,6 +541,47 @@ public class WorkspaceViewController {
             Lesson createdLesson = new Gson().fromJson(apiResponse.getBody().toString(), Lesson.class);
 
             return createdLesson;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Task createTask(Task task) {
+        try {
+            Unirest.setObjectMapper(new ObjectMapper() {
+                com.fasterxml.jackson.databind.ObjectMapper mapper
+                        = new com.fasterxml.jackson.databind.ObjectMapper();
+
+                public String writeValue(Object value) {
+                    try {
+                        return mapper.writeValueAsString(value);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        return String.valueOf(e);
+                    }
+                }
+
+                public <T> T readValue(String value, Class<T> valueType) {
+                    try {
+                        return mapper.readValue(value, valueType);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            });
+
+            HttpResponse<JsonNode> apiResponse = Unirest.post(dotenv.get("HOST") + "/tasks")
+                    .header("Content-Type", "application/json")
+                    .body(task)
+                    .asJson();
+
+            if(apiResponse.getStatus() == 400) return null;
+
+            Task createdTask = new Gson().fromJson(apiResponse.getBody().toString(), Task.class);
+
+            return createdTask;
         } catch (UnirestException e) {
             e.printStackTrace();
             return null;
