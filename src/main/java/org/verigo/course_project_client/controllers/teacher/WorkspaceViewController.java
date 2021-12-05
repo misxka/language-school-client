@@ -12,10 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -220,22 +217,30 @@ public class WorkspaceViewController {
         switchCourseLessonButton.setOnAction(event -> {
             Lesson result = addLessonToCourse(selectedLesson.getId(), selectedCourse.getId());
             if(result == null) {
-                //TODO Add modal windows
+                createAlert(Alert.AlertType.ERROR, "Ошибка", "Увы(: Не получилось добавить урок.");
             } else {
-
+                createAlert(Alert.AlertType.INFORMATION, "Успешно", "Урок успешно добавлен в курс!");
             }
         });
 
         switchLessonTaskButton.setOnAction(event -> {
             Task result = addTaskToLesson(selectedTask.getId(), selectedLesson.getId());
             if(result == null) {
-
+                createAlert(Alert.AlertType.ERROR, "Ошибка", "Увы(: Не получилось добавить задание.");
             } else {
-
+                createAlert(Alert.AlertType.INFORMATION, "Успешно", "Задание успешно добавлено к уроку!");
             }
         });
     }
 
+    private void createAlert(Alert.AlertType type, String title, String contextText) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(contextText);
+
+        alert.showAndWait();
+    }
 
     //API calls
     private List<Course> getAllCourses() {
