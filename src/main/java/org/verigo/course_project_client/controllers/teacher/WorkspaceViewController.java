@@ -10,6 +10,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -31,8 +32,13 @@ public class WorkspaceViewController {
 
 
     private List<Course> courses = new ArrayList<>();
+    private ObservableList<Course> observableCourses;
+
     private List<Lesson> lessons = new ArrayList<>();
+    private ObservableList<Lesson> observableLessons;
+
     private List<Task> tasks = new ArrayList<>();
+    private ObservableList<Task> observableTasks;
 
 
     @FXML
@@ -69,12 +75,23 @@ public class WorkspaceViewController {
     @FXML
     public void initialize() {
         this.courses = getAllCourses();
+        observableCourses = FXCollections.observableArrayList(courses);
         this.lessons = getAllLessons();
+        observableLessons = FXCollections.observableArrayList(lessons);
         this.tasks = getAllTasks();
+        observableTasks = FXCollections.observableArrayList(tasks);
 
         initCoursesTable();
         initLessonsTable();
         initTasksTable();
+
+        initActions();
+    }
+
+    private void initActions() {
+        coursesTable.setItems(observableCourses);
+        lessonsTable.setItems(observableLessons);
+        tasksTable.setItems(observableTasks);
     }
 
     private void initCoursesTable() {
@@ -98,14 +115,10 @@ public class WorkspaceViewController {
         coursesIsOnlineColumn.setStyle("-fx-alignment: CENTER");
         coursesPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
         coursesPriceColumn.setStyle("-fx-alignment: CENTER");
-
-        coursesTable.setItems(FXCollections.observableArrayList(this.courses));
     }
 
     private void initLessonsTable() {
         lessonsTitleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
-
-        lessonsTable.setItems(FXCollections.observableArrayList(this.lessons));
     }
 
     private void initTasksTable() {
@@ -127,8 +140,30 @@ public class WorkspaceViewController {
         tasksIsHometaskColumn.setStyle("-fx-alignment: CENTER");
         tasksMaxPointsColumn.setCellValueFactory(new PropertyValueFactory<>("maxPoints"));
         tasksMaxPointsColumn.setStyle("-fx-alignment: CENTER");
+    }
 
-        tasksTable.setItems(FXCollections.observableArrayList(this.tasks));
+    @FXML
+    private void onRefreshCoursesTable(ActionEvent actionEvent) {
+        courses = getAllCourses();
+        observableCourses = FXCollections.observableArrayList(courses);
+
+        initActions();
+    }
+
+    @FXML
+    private void onRefreshLessonsTable(ActionEvent actionEvent) {
+        lessons = getAllLessons();
+        observableLessons = FXCollections.observableArrayList(lessons);
+
+        initActions();
+    }
+
+    @FXML
+    private void onRefreshTasksTable(ActionEvent actionEvent) {
+        tasks = getAllTasks();
+        observableTasks = FXCollections.observableArrayList(tasks);
+
+        initActions();
     }
 
 

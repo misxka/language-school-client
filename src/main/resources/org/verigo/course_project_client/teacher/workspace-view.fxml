@@ -26,7 +26,7 @@
                               <TableColumn fx:id="coursesPriceColumn" prefWidth="79.0" text="Цена" />
                           </columns>
                       </TableView>
-                      <Button fx:id="refreshCoursesTable" layoutX="585.0" layoutY="56.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #46aae8;" text="Обновить таблицу" textFill="WHITE">
+                      <Button fx:id="refreshCoursesTable" layoutX="585.0" layoutY="56.0" mnemonicParsing="false" onAction="#onRefreshCoursesTable" style="-fx-cursor: hand; -fx-background-color: #46aae8;" text="Обновить таблицу" textFill="WHITE">
                           <font>
                               <Font size="14.0" />
                           </font>
@@ -76,7 +76,7 @@
                               <TableColumn fx:id="lessonsTitleColumn" prefWidth="200.0" text="Название" />
                           </columns>
                       </TableView>
-                      <Button fx:id="refreshLessonsTable" layoutX="246.0" layoutY="56.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #46aae8;" text="Обновить таблицу" textFill="WHITE">
+                      <Button fx:id="refreshLessonsTable" onAction="#onRefreshLessonsTable" layoutX="246.0" layoutY="56.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #46aae8;" text="Обновить таблицу" textFill="WHITE">
                           <font>
                               <Font size="14.0" />
                           </font>
@@ -158,7 +158,7 @@
                               <TableColumn fx:id="tasksMaxPointsColumn" prefWidth="120.0" text="Макс. оценка" />
                           </columns>
                       </TableView>
-                      <Button fx:id="refreshTasksTable" layoutX="820.0" layoutY="56.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #46aae8;" text="Обновить таблицу" textFill="WHITE">
+                      <Button fx:id="refreshTasksTable" onAction="#onRefreshTasksTable" layoutX="820.0" layoutY="56.0" mnemonicParsing="false" style="-fx-cursor: hand; -fx-background-color: #46aae8;" text="Обновить таблицу" textFill="WHITE">
                           <font>
                               <Font size="14.0" />
                           </font>
