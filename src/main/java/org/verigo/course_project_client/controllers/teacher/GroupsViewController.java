@@ -68,12 +68,19 @@ public class GroupsViewController {
 
     @FXML
     public void initialize() {
+        refreshUserData();
+
         groupsIds = getGroupsIds();
 
         getAllGroups();
 
         initTableComponent();
         fillTable();
+    }
+
+    private void refreshUserData() {
+        UserProvider.getInstance().setUser(getUserById(loggedUser.getId()));
+        loggedUser = UserProvider.getInstance().getUser();
     }
 
     private void getAllGroups() {
@@ -227,7 +234,7 @@ public class GroupsViewController {
         userNameColumn.setStyle("-fx-alignment: CENTER; -fx-font-size: 14");
         userNameColumn.setSortable(false);
         userNameColumn.setCellValueFactory(data -> {
-            String userName = data.getValue().getSurname() + " " + data.getValue().getName();
+            String userName = data.getValue().getLogin() + " - " + data.getValue().getSurname() + " " + data.getValue().getName();
             return new SimpleStringProperty(userName);
         });
 
@@ -243,11 +250,11 @@ public class GroupsViewController {
                 column.setCellFactory(col -> new IntegerEditingCell(1, 10));
                 column.setOnEditCommit(event -> {
                     result.setPoints(Integer.parseInt(event.getNewValue()));
-                    result.setCompleted(true);
+                    result.setIsCompleted(true);
                 });
 
                 column.setCellValueFactory(data -> {
-                    boolean isCompleted = result.isCompleted();
+                    boolean isCompleted = result.getIsCompleted();
 
                     if (!isCompleted) return new SimpleStringProperty("");
                     return new SimpleStringProperty(String.valueOf(result.getPoints()));
@@ -394,7 +401,7 @@ public class GroupsViewController {
 
         participants.forEach(participant -> {
             List<String> results = new ArrayList<>();
-            results.add(participant.getSurname() + " " + participant.getName());
+            results.add(participant.getLogin() + " - " + participant.getSurname() + " " + participant.getName());
             participant.getTasksResults().forEach(result -> {
                 if(availableIds.contains(result.getTask().getId())) {
                     results.add(result.getPoints() == 0 ? "" : String.valueOf(result.getPoints()));
@@ -415,7 +422,7 @@ public class GroupsViewController {
         for (int i = 0; i < titles.size(); i++)
         {
             sheet.autoSizeColumn(i);
-            sheet.setColumnWidth(i,sheet.getColumnWidth(i) * 30/10);
+            sheet.setColumnWidth(i,sheet.getColumnWidth(i) * 40/10);
             org.apache.poi.ss.usermodel.Cell cell = titlesRow.createCell(cellnum++);
             cell.setCellValue(titles.get(i));
             cell.setCellStyle(headerStyle);
@@ -487,9 +494,26 @@ public class GroupsViewController {
 
             if(apiResponse.getStatus() == 400) return null;
 
-            User createdUser = new Gson().fromJson(apiResponse.getBody().toString(), User.class);
+            User updatedUser = new Gson().fromJson(apiResponse.getBody().toString(), User.class);
 
-            return createdUser;
+            return updatedUser;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private User getUserById(int userId) {
+        try {
+            HttpResponse<JsonNode> apiResponse = Unirest.get(dotenv.get("HOST") + "/users/" + userId)
+                    .header("Content-Type", "application/json")
+                    .asJson();
+
+            if(apiResponse.getStatus() == 400) return null;
+
+            User foundUser = new Gson().fromJson(apiResponse.getBody().toString(), User.class);
+
+            return foundUser;
         } catch (UnirestException e) {
             e.printStackTrace();
             return null;

@@ -11,26 +11,6 @@ public class UserTaskResult {
 
     private boolean isCompleted;
 
-    public UserTaskResult() {
-
-    }
-
-    public UserTaskResult(UserTaskKey id, User user, Task task) {
-        this.id = id;
-        this.user = user;
-        this.task = task;
-        this.isCompleted = false;
-    }
-
-    public UserTaskResult(UserTaskKey id, User user, Task task, int points) {
-        this.id = id;
-        this.user = user;
-        this.task = task;
-        this.points = points;
-        this.isCompleted = true;
-    }
-
-
     public Task getTask() {
         return task;
     }
@@ -47,7 +27,7 @@ public class UserTaskResult {
         return id;
     }
 
-    public boolean isCompleted() {
+    public boolean getIsCompleted() {
         return isCompleted;
     }
 
@@ -67,7 +47,7 @@ public class UserTaskResult {
         this.points = points;
     }
 
-    public void setCompleted(boolean completed) {
+    public void setIsCompleted(boolean completed) {
         isCompleted = completed;
     }
 }

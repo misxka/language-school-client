@@ -121,7 +121,7 @@ public class StudentViewController {
         final int[] totalScore = {0};
 
         loggedUser.getTasksResults().forEach(result -> {
-            if(result.isCompleted() == true) {
+            if(result.getIsCompleted() == true) {
                 amountCompleted[0]++;
                 totalScore[0] += result.getPoints();
             }

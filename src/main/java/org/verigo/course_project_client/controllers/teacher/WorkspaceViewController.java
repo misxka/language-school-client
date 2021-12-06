@@ -18,11 +18,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.verigo.course_project_client.constraints.ROLE;
 import org.verigo.course_project_client.models.Course;
 import org.verigo.course_project_client.models.Lesson;
 import org.verigo.course_project_client.models.Task;
-import org.verigo.course_project_client.models.UserAdapter;
 import org.verigo.course_project_client.store.DotenvProvider;
 
 import java.lang.reflect.Type;
@@ -34,6 +32,7 @@ public class WorkspaceViewController {
     Dotenv dotenv = DotenvProvider.getInstance().getDotenv();
 
     private final String[] levels = { "A1", "A1+", "A2", "A2+", "B1", "B1+", "B2", "B2+", "C1", "C1+", "C2", "C2+" };
+    private final String[] languages = { "Английский", "Немецкий", "Испанский", "Французский", "Итальянский", "Русский", "Польский", "Японский", "Арабский", "Чешский" };
     private final String[] courseFormats = { "Онлайн", "Офлайн" };
     private final String[] hometaskFormats = { "Да", "Нет" };
 
@@ -100,7 +99,7 @@ public class WorkspaceViewController {
     @FXML
     private TextField setCourseTitleField;
     @FXML
-    private TextField setCourseLanguageField;
+    private ChoiceBox<String> setCourseLanguageField;
     @FXML
     private Spinner<Double> setCoursePriceField;
     @FXML
@@ -320,12 +319,13 @@ public class WorkspaceViewController {
     private void initAddCourseComponent() {
         setCourseLevelBox.setItems(FXCollections.observableArrayList(levels));
         setCourseIsOnlineBox.setItems(FXCollections.observableArrayList(courseFormats));
+        setCourseLanguageField.setItems(FXCollections.observableArrayList(languages));
 
         addCourseButton.setOnAction(event -> {
             if(isCourseValid()) {
                 Course course = new Course();
                 course.setTitle(setCourseTitleField.getText());
-                course.setLanguage(setCourseLanguageField.getText());
+                course.setLanguage(setCourseLanguageField.getValue());
                 course.setLevel(setCourseLevelBox.getValue());
                 if(setCourseIsOnlineBox.getValue().equals("Онлайн"))
                     course.setIsOnline(true);
@@ -386,7 +386,9 @@ public class WorkspaceViewController {
 
     private void resetCourseFields() {
         setCourseTitleField.clear();
-        setCourseLanguageField.clear();
+        setCourseLanguageField.getSelectionModel().clearSelection();
+        setCourseIsOnlineBox.getSelectionModel().clearSelection();
+        setCourseLevelBox.getSelectionModel().clearSelection();
         setCoursePriceField.getEditor().setText("50");
     }
 
@@ -397,7 +399,7 @@ public class WorkspaceViewController {
 
     private boolean isCourseValid() {
         if(setCourseTitleField.getText() == null || setCourseTitleField.getText().equals("")) return false;
-        if(setCourseLanguageField.getText() == null || setCourseLanguageField.getText().equals("")) return false;
+        if(setCourseLanguageField.getValue() == null || setCourseLanguageField.getValue().equals("")) return false;
         if(setCourseLevelBox.getValue() == null || setCourseLevelBox.getValue().equals("")) return false;
         if(setCourseIsOnlineBox.getValue() == null || setCourseIsOnlineBox.getValue().equals("")) return false;
         if(setCoursePriceField.getEditor().getText() == null || setCoursePriceField.getEditor().getText().equals("")) return false;

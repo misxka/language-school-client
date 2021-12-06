@@ -7,11 +7,12 @@
 
 <AnchorPane fx:id="coursesBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.verigo.course_project_client.controllers.teacher.TeacherViewController">
    <children>
-      <GridPane alignment="CENTER" layoutX="200.0" layoutY="225.0">
+      <GridPane alignment="CENTER" layoutX="100.0" layoutY="225.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="200.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="200.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="200.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="200.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
@@ -41,6 +42,14 @@
                   <Font size="20.0" />
                </font>
             </Button>
+             <Button fx:id="creatingGroupsButton" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#onCreatingGroupsBtnClick" prefHeight="190.0" prefWidth="190.0" style="-fx-background-color: #46aae8; -fx-cursor: hand;" text="Создание групп" textAlignment="CENTER" textFill="WHITE" wrapText="true" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                 <graphic>
+                     <FontIcon iconColor="white" iconLiteral="fas-users-cog" iconSize="50" />
+                 </graphic>
+                 <font>
+                     <Font size="20.0" />
+                 </font>
+             </Button>
          </children>
       </GridPane>
    </children>

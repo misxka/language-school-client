@@ -39,6 +39,11 @@ public class TeacherViewController {
         loadStage("teacher/groups-view.fxml");
     }
 
+    @FXML
+    public void onCreatingGroupsBtnClick(ActionEvent event) {
+        loadStage("teacher/creating-groups-view.fxml");
+    }
+
     private void loadStage(String fxml) {
         try {
             Parent root = FXMLLoader.load(MainApplication.class.getResource(fxml));
