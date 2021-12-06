@@ -31,8 +31,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//TODO Update metrics on data change or table reload
-
 public class AdminViewController {
     Dotenv dotenv = DotenvProvider.getInstance().getDotenv();
 
@@ -257,8 +255,6 @@ public class AdminViewController {
 
     private void setTableEditing() {
         usersTable.setEditable(true);
-
-        //TODO Check differences before sending update
 
         loginColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         loginColumn.setOnEditCommit(

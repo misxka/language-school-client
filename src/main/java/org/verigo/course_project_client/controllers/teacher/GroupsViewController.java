@@ -496,5 +496,3 @@ public class GroupsViewController {
         }
     }
 }
-
-//TODO Close studentResults when new Group selected

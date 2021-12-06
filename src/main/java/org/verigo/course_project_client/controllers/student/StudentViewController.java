@@ -1,37 +1,33 @@
 package org.verigo.course_project_client.controllers.student;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.github.cdimascio.dotenv.Dotenv;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.verigo.course_project_client.MainApplication;
-import org.verigo.course_project_client.controllers.teacher.CourseInfoViewController;
-import org.verigo.course_project_client.controllers.teacher.CoursesViewController;
-import org.verigo.course_project_client.controllers.teacher.GroupsViewController;
 import org.verigo.course_project_client.models.*;
 import org.verigo.course_project_client.store.DotenvProvider;
 import org.verigo.course_project_client.store.UserProvider;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -72,6 +68,12 @@ public class StudentViewController {
     @FXML
     private ListView myCoursesListView;
 
+    @FXML
+    private ProgressBar studentProgress;
+
+    @FXML
+    private TextField averageGrade;
+
 
     @FXML
     public void initialize() {
@@ -83,6 +85,8 @@ public class StudentViewController {
         initCoursesTableComponent();
         fillCoursesTable();
         fillMyCoursesListView();
+
+        setMetrics();
     }
 
     private void initActions() {
@@ -93,6 +97,46 @@ public class StudentViewController {
         setObservableCourses();
         fillCoursesTable();
         fillMyCoursesListView();
+
+        setMetrics();
+    }
+
+    private void setMetrics() {
+        Set<Task> myTasks = new HashSet<>();
+
+        Set<Lesson> myLessons = new HashSet<>();
+
+        myCourses.forEach(course -> {
+            course.getLessons().forEach(lesson -> myLessons.add(lesson));
+        });
+
+
+        myLessons.forEach(lesson -> {
+            lesson.getTasks().forEach(task -> myTasks.add(task));
+        });
+
+        int amount = myTasks.size();
+        final int[] amountCompleted = {0};
+
+        final int[] totalScore = {0};
+
+        loggedUser.getTasksResults().forEach(result -> {
+            if(result.isCompleted() == true) {
+                amountCompleted[0]++;
+                totalScore[0] += result.getPoints();
+            }
+        });
+
+        double averageScore = 0;
+        if(amountCompleted[0] != 0)
+        averageScore = (double) totalScore[0] / amountCompleted[0];
+
+        if(averageScore == 0) averageGrade.setText("N/A");
+        else averageGrade.setText(String.valueOf(new BigDecimal(averageScore).setScale(1, RoundingMode.HALF_EVEN)));
+
+        double progressValue = (double) amountCompleted[0] / amount;
+        if(amount != 0) studentProgress.setProgress(progressValue);
+        else studentProgress.setProgress(0);
     }
 
     private void initMyCourses() {
@@ -183,7 +227,7 @@ public class StudentViewController {
                 groupsTable.setItems(FXCollections.observableArrayList(groups));
 
                 Button assignToGroupButton = new Button("Записаться в группу");
-                assignToGroupButton.setStyle("-fx-font-size: 14; -fx-background-color: #46aae8; -fx-text-fill: white;");
+                assignToGroupButton.setStyle("-fx-font-size: 14; -fx-background-color: #46aae8; -fx-text-fill: white; -fx-cursor: hand;");
                 assignToGroupButton.setLayoutY(260);
                 assignToGroupButton.setDisable(true);
 
@@ -201,6 +245,22 @@ public class StudentViewController {
                     if (result != null) {
                         User user = getUserInfo();
                         loggedUser = user != null ? user : loggedUser;
+
+                        Set<Lesson> myLessons = new HashSet<>();
+                        myCourses.forEach(myCourse -> {
+                            myCourse.getLessons().forEach(lesson -> {
+                                myLessons.add(lesson);
+                            });
+                        });
+
+                        List<Integer> myTasksIds = new ArrayList<>();
+                        myLessons.forEach(lesson -> {
+                            lesson.getTasks().forEach(task -> {
+                                myTasksIds.add(task.getId());
+                            });
+                        });
+
+                        addTasksToUser(loggedUser.getId(), myTasksIds);
 
                         initActions();
 
@@ -249,6 +309,11 @@ public class StudentViewController {
         groupsTable.getColumns().addAll(groupNameColumn);
     }
 
+    @FXML
+    private void onRefreshInfo(ActionEvent event) {
+        initActions();
+    }
+
 
     //API Calls
     private ArrayList<Course> getAllCourses() {
@@ -291,6 +356,46 @@ public class StudentViewController {
 
             Type userType = new TypeToken<User>(){}.getType();
             User res = new Gson().fromJson(apiResponse.getBody().toString(), userType);
+
+            return res;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private List<UserTaskResult> addTasksToUser(int userId, List<Integer> tasksIds) {
+        try {
+            Unirest.setObjectMapper(new ObjectMapper() {
+                com.fasterxml.jackson.databind.ObjectMapper mapper
+                        = new com.fasterxml.jackson.databind.ObjectMapper();
+
+                public String writeValue(Object value) {
+                    try {
+                        return mapper.writeValueAsString(value);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        return String.valueOf(e);
+                    }
+                }
+
+                public <T> T readValue(String value, Class<T> valueType) {
+                    try {
+                        return mapper.readValue(value, valueType);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            });
+
+            HttpResponse<JsonNode> apiResponse = Unirest.post(dotenv.get("HOST") + "/results/multiple")
+                    .header("Content-Type", "application/json")
+                    .body(new PostMultipleBody(userId, tasksIds))
+                    .asJson();
+
+            Type userTaskResultListType = new TypeToken<ArrayList<UserTaskResult>>(){}.getType();
+            ArrayList<UserTaskResult> res = new Gson().fromJson(apiResponse.getBody().toString(), userTaskResultListType);
 
             return res;
         } catch (UnirestException e) {
