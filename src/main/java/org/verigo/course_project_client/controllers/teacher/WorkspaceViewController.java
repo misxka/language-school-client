@@ -16,11 +16,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.verigo.course_project_client.models.Course;
 import org.verigo.course_project_client.models.Lesson;
 import org.verigo.course_project_client.models.Task;
+import org.verigo.course_project_client.models.User;
 import org.verigo.course_project_client.store.DotenvProvider;
 
 import java.lang.reflect.Type;
@@ -35,6 +37,8 @@ public class WorkspaceViewController {
     private final String[] languages = { "Английский", "Немецкий", "Испанский", "Французский", "Итальянский", "Русский", "Польский", "Японский", "Арабский", "Чешский" };
     private final String[] courseFormats = { "Онлайн", "Офлайн" };
     private final String[] hometaskFormats = { "Да", "Нет" };
+    private static final String titleInUse = "Такое название уже существует.";
+    private static final String negativePrice = "Цена должны быть > 0.";
 
     private Course selectedCourse = null;
     private Lesson selectedLesson = null;
@@ -128,6 +132,22 @@ public class WorkspaceViewController {
     @FXML
     private Button deleteTaskButton;
 
+    @FXML
+    private Label wrongCourseTitleLabel;
+    @FXML
+    private Label wrongPriceLabel;
+    @FXML
+    private Label wrongLessonTitleLabel;
+    @FXML
+    private Label wrongTaskTitleLabel;
+
+    @FXML
+    private AnchorPane coursesContainer;
+    @FXML
+    private AnchorPane lessonsContainer;
+    @FXML
+    private AnchorPane tasksContainer;
+
 
     @FXML
     public void initialize() {
@@ -150,6 +170,44 @@ public class WorkspaceViewController {
         initAddLessonComponent();
         initAddTaskComponent();
         initDeleteButtons();
+
+        initLabels();
+    }
+
+    private void initLabels() {
+        wrongPriceLabel = new Label();
+        wrongCourseTitleLabel = new Label();
+        wrongLessonTitleLabel = new Label();
+        wrongTaskTitleLabel = new Label();
+
+        wrongCourseTitleLabel.setVisible(false);
+        wrongCourseTitleLabel.setStyle("-fx-text-fill: red; -fx-font-size: 10;");
+        wrongCourseTitleLabel.setLayoutX(14);
+        wrongCourseTitleLabel.setLayoutY(370);
+
+        wrongLessonTitleLabel.setVisible(false);
+        wrongLessonTitleLabel.setStyle("-fx-text-fill: red; -fx-font-size: 10;");
+        wrongLessonTitleLabel.setLayoutX(14);
+        wrongLessonTitleLabel.setLayoutY(370);
+
+        wrongTaskTitleLabel.setVisible(false);
+        wrongTaskTitleLabel.setStyle("-fx-text-fill: red; -fx-font-size: 10;");
+        wrongTaskTitleLabel.setLayoutX(14);
+        wrongTaskTitleLabel.setLayoutY(370);
+
+        wrongPriceLabel.setVisible(false);
+        wrongPriceLabel.setStyle("-fx-text-fill: red; -fx-font-size: 10;");
+        wrongPriceLabel.setLayoutX(534);
+        wrongPriceLabel.setLayoutY(370);
+
+        wrongCourseTitleLabel.setText(titleInUse);
+        wrongLessonTitleLabel.setText(titleInUse);
+        wrongTaskTitleLabel.setText(titleInUse);
+        wrongPriceLabel.setText(negativePrice);
+
+        coursesContainer.getChildren().addAll(wrongCourseTitleLabel, wrongPriceLabel);
+        lessonsContainer.getChildren().addAll(wrongLessonTitleLabel);
+        tasksContainer.getChildren().addAll(wrongTaskTitleLabel);
     }
 
     private void initActions() {
@@ -333,11 +391,15 @@ public class WorkspaceViewController {
                 course.setPrice(new BigDecimal(setCoursePriceField.getEditor().getText().replaceAll(",", ".")));
 
                 Course result = createCourse(course);
-                if(result != null) {
+
+                if(result.getId() != null) {
+                    wrongCourseTitleLabel.setVisible(false);
                     courses = getAllCourses();
                     observableCourses = FXCollections.observableArrayList(courses);
                     initActions();
                     resetCourseFields();
+                } else {
+                    wrongCourseTitleLabel.setVisible(true);
                 }
             }
         });
@@ -350,11 +412,14 @@ public class WorkspaceViewController {
                 lesson.setTitle(setLessonTitleField.getText());
 
                 Lesson result = createLesson(lesson);
-                if (result != null) {
+                if (result.getId() != null) {
+                    wrongLessonTitleLabel.setVisible(false);
                     lessons = getAllLessons();
                     observableLessons = FXCollections.observableArrayList(lessons);
                     initActions();
                     setLessonTitleField.clear();
+                } else {
+                    wrongLessonTitleLabel.setVisible(true);
                 }
             }
         });
@@ -374,12 +439,13 @@ public class WorkspaceViewController {
                 task.setMaxPoints(10);
 
                 Task result = createTask(task);
-                if(result != null) {
+                if(result.getId() != null) {
+                    wrongTaskTitleLabel.setVisible(false);
                     tasks = getAllTasks();
                     observableTasks = FXCollections.observableArrayList(tasks);
                     initActions();
                     resetTaskFields();
-                }
+                } else wrongTaskTitleLabel.setVisible(true);
             }
         });
     }
@@ -404,7 +470,12 @@ public class WorkspaceViewController {
         if(setCourseIsOnlineBox.getValue() == null || setCourseIsOnlineBox.getValue().equals("")) return false;
         if(setCoursePriceField.getEditor().getText() == null || setCoursePriceField.getEditor().getText().equals("")) return false;
         try {
-            Double.parseDouble(setCoursePriceField.getEditor().getText().replaceAll(",", "."));
+            double parsedPrice = Double.parseDouble(setCoursePriceField.getEditor().getText().replaceAll(",", "."));
+            if(parsedPrice <= 0) {
+                wrongPriceLabel.setVisible(true);
+                return false;
+            }
+            wrongPriceLabel.setVisible(false);
         } catch(NumberFormatException e) {
             return false;
         }
@@ -429,7 +500,7 @@ public class WorkspaceViewController {
             int id = course.getId();
 
             Course result = deleteCourse(id);
-            if(result != null) {
+            if(result.getId() != null) {
                 courses = getAllCourses();
                 observableCourses = FXCollections.observableArrayList(courses);
                 initActions();
@@ -442,7 +513,7 @@ public class WorkspaceViewController {
             int id = lesson.getId();
 
             Lesson result = deleteLesson(id);
-            if(result != null) {
+            if(result.getId() != null) {
                 lessons = getAllLessons();
                 observableLessons = FXCollections.observableArrayList(lessons);
                 initActions();
@@ -455,7 +526,7 @@ public class WorkspaceViewController {
             int id = task.getId();
 
             Task result = deleteTask(id);
-            if(result != null) {
+            if(result.getId() != null) {
                 tasks = getAllTasks();
                 observableTasks = FXCollections.observableArrayList(tasks);
                 initActions();
